@@ -1,2 +1,4 @@
 npm install typeorm reflect-metadata mysql2
 connect with typeorm => entity service controller add e n c to module in typeorm
+
+main add cors 
