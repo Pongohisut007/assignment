@@ -1,10 +1,12 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -16,6 +18,13 @@ export default function LoginPage() {
     
 
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+       {/* 🔙 ปุ่มย้อนกลับที่มุมซ้ายบน */}
+       <button
+        onClick={() => router.back()}
+        className="absolute top-4 left-4 text-sky-500 hover:text-sky-600 text-sm px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-md"
+      >
+        ← Go Back
+      </button>
       <div className="relative py-6 w-full max-w-md">
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-sky-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
         <div className="relative bg-white shadow-lg sm:rounded-3xl p-10">

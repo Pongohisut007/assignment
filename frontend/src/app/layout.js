@@ -12,9 +12,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="antialiased">
-        <Navbar />
+        
         <RootLayoutClient>{children}</RootLayoutClient> {/* ใช้ Client Component */}
-        <Footer />
       </body>
     </html>
   );
