@@ -1,23 +1,77 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const navigation = [
   { name: 'Home', href: '/', current: true },
   { name: 'Translation', href: '/Translation', current: false },
-  { name: 'Projects', href: '/projects', current: false }
+  { name: 'Projects', href: '/projects', current: false },
 ];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // จำลองสถานะล็อกอิน
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+  const [usernameInitial, setUsernameInitial] = useState(''); // ตัวอักษรแรกของ username
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const isLoggedIn = getCookie('isLoggedIn');
+      const userCookie = getCookie('user');
+      console.log('isLoggedIn:', isLoggedIn, 'userCookie:', userCookie);
+      
+      const isAuth = isLoggedIn === 'true';
+      setIsAuthenticated(isAuth);
+
+      if (isAuth && userCookie) {
+        const userData = JSON.parse(userCookie);
+        const username = userData.email.split('@')[0]; // สมมติว่าไม่มี username ใน cookie ใช้ email แทน
+        setUsernameInitial(username.charAt(0).toUpperCase()); // ตัวอักษรแรก
+      } else {
+        setUsernameInitial('');
+      }
+    };
+
+    checkAuth();
+    setHydrated(true);
+
+    const timeout = setTimeout(checkAuth, 100); // Retry หลัง 100ms เพื่อ sync cookie
+
+    if (router && router.events) {
+      router.events.on('routeChangeComplete', checkAuth);
+      return () => {
+        clearTimeout(timeout);
+        router.events.off('routeChangeComplete', checkAuth);
+      };
+    }
+  }, [router]);
+
+  const handleLogout = () => {
+    document.cookie = 'user=; path=/; max-age=0';
+    document.cookie = 'token=; path=/; max-age=0';
+    document.cookie = 'isLoggedIn=; path=/; max-age=0';
+    setIsAuthenticated(false);
+    setUsernameInitial(''); // รีเซ็ตตัวอักษรแรก
+    router.push('/login');
+  };
+
+  if (!hydrated) return null;
 
   return (
     <nav className="bg-gray-800">
@@ -71,13 +125,11 @@ export default function Navbar() {
                   <BellIcon className="size-6" aria-hidden="true" />
                 </button>
                 <Menu as="div" className="relative ml-3">
-                  <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white">
+                  <MenuButton className="relative flex items-center justify-center rounded-full bg-gray-800 border-2 border-white text-sm text-white focus:ring-2 focus:ring-white w-8 h-8">
                     <span className="sr-only">Open user menu</span>
-                    <img
-                      alt="User Avatar"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                      className="size-8 rounded-full"
-                    />
+                    <span className="text-lg font-medium ">
+                      {usernameInitial || 'U'} {/* แสดงตัวอักษรแรก หรือ 'U' ถ้าไม่มี */}
+                    </span>
                   </MenuButton>
                   <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
                     <MenuItem>
@@ -101,10 +153,10 @@ export default function Navbar() {
                     <MenuItem>
                       {({ active }) => (
                         <button
-                          onClick={() => setIsAuthenticated(false)}
+                          onClick={handleLogout}
                           className={classNames(active ? 'bg-gray-100' : '', 'block w-full text-left px-4 py-2 text-sm text-gray-700')}
                         >
-                          Sign out
+                          Logout
                         </button>
                       )}
                     </MenuItem>
