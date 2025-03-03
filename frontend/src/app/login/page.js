@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../RootLayout.client';
 import Link from 'next/link';
@@ -11,8 +11,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [hydrated, setHydrated] = useState(false); // เพิ่ม state สำหรับ hydration
   const router = useRouter();
   const { login } = useAuth();
+
+  // Sync hydration
+  useEffect(() => {
+    setHydrated(true); // ตั้งค่า hydrated เป็น true หลังจาก client โหลด
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,6 +85,9 @@ export default function LoginPage() {
     }
   };
 
+  // รอ hydration เสร็จก่อน render
+  if (!hydrated) return null;
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <Link href="/" className="absolute top-4 left-4">
@@ -95,8 +104,10 @@ export default function LoginPage() {
           {error && <p className="text-red-500 text-sm text-center mt-4">{error}</p>}
 
           <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
-            <div className='relative'>
-              
+            <div>
+              <label htmlFor="emailOrUsername" className="block text-sm font-medium text-gray-700">
+                Username/Email
+              </label>
               <input
                 type="text"
                 id="emailOrUsername"
@@ -105,18 +116,14 @@ export default function LoginPage() {
                 onChange={(e) => setEmailOrUsername(e.target.value)}
                 required
                 disabled={isLoading}
-                className="peer placeholder-transparent w-full h-10 border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-sky-500"
+                className="w-full border p-2 rounded text-gray-800 mt-1"
               />
-              <label
-                htmlFor="username"
-                className="absolute left-0 -top-3.5 text-gray-800 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-2 peer-placeholder-shown:text-gray-400 peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-gray-600"
-              >
-                Username / Email Address
-              </label>
             </div>
 
-            <div className='relative'>
-
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
               <input
                 type="password"
                 id="password"
@@ -125,14 +132,8 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
-                className="peer placeholder-transparent w-full h-10 border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-sky-500"
+                className="w-full border p-2 rounded text-gray-800 mt-1"
               />
-                          <label
-                htmlFor="username"
-                className="absolute left-0 -top-3.5 text-gray-800 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-2 peer-placeholder-shown:text-gray-400 peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-gray-600"
-              >
-                Password
-              </label>
             </div>
 
             <div className="text-center flex justify-end text-sm text-gray-600">

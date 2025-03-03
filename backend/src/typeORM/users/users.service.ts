@@ -1,7 +1,7 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto'; // เปลี่ยนจาก bcrypt เป็น crypto
 import { Users, UserRole } from './users.entity';
 import { CreateUserDto } from './create-user.dto';
 
@@ -9,10 +9,20 @@ import { CreateUserDto } from './create-user.dto';
 export class UsersService {
   constructor(@InjectRepository(Users) private userRepository: Repository<Users>) {}
 
+  // ฟังก์ชันช่วยแฮชรหัสผ่านด้วย crypto
+  private async hashPassword(password: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const salt = crypto.randomBytes(16).toString('hex'); // สร้าง salt
+      crypto.pbkdf2(password, salt, 10000, 64, 'sha512', (err, derivedKey) => {
+        if (err) reject(err);
+        resolve(`${salt}:${derivedKey.toString('hex')}`); // เก็บ salt และ hash คู่กัน
+      });
+    });
+  }
+
   async createUser(dto: CreateUserDto, role: UserRole = UserRole.USER): Promise<Users> {
     const { username, email, password } = dto;
 
-    // ✅ ใช้ QueryBuilder ตรวจสอบซ้ำ
     const existingUser = await this.userRepository
       .createQueryBuilder('user')
       .where('user.username = :username OR user.email = :email', { username, email })
@@ -22,20 +32,19 @@ export class UsersService {
       throw new ConflictException('Username or Email already exists');
     }
 
-    // ✅ แฮชรหัสผ่าน
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // แฮชรหัสผ่านด้วย crypto
+    const hashedPassword = await this.hashPassword(password);
 
     const user = this.userRepository.create({
       username,
       email,
-      password_hash: hashedPassword,
+      password_hash: hashedPassword, // ใช้ hashedPassword ที่ได้จาก crypto
       role,
     });
 
     return this.userRepository.save(user);
   }
 
-  // ✅ สร้าง Admin โดยตรง
   async createAdmin(dto: CreateUserDto): Promise<Users> {
     return this.createUser(dto, UserRole.ADMIN);
   }
@@ -46,9 +55,8 @@ export class UsersService {
     });
   }
 
-  // src/typeORM/users/users.service.ts
   async findOne(user_id: number): Promise<Users> {
-    console.log('findOne called with user_id:', user_id); // ควรได้ 6
+    console.log('findOne called with user_id:', user_id);
     if (isNaN(user_id)) {
       throw new Error('Invalid user_id: must be a number');
     }
@@ -63,12 +71,12 @@ export class UsersService {
   async findOneByEmail(email: string): Promise<Users> {
     const user = await this.userRepository.findOne({
       where: { email },
-      select: ['user_id', 'username', 'email', 'password_hash', 'role', 'created_at'], // เพิ่ม password_hash
+      select: ['user_id', 'username', 'email', 'password_hash', 'role', 'created_at'],
     });
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
-  
+
   async findOneByUsername(username: string): Promise<Users> {
     const user = await this.userRepository.findOne({
       where: { username },
@@ -77,5 +85,4 @@ export class UsersService {
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
-  
 }
