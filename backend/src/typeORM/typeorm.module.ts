@@ -14,18 +14,18 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { ChatHistory } from './chatHistory/chat-history.entity';
 import { ChatHistoryController } from './chatHistory/chat-history.controller';
 import { ChatHistoryService } from './chatHistory/chat-history.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import 'dotenv/config';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '35.188.215.3',
-      port: 3306,
-      username: 'nongao',
-      password: 'rootpass',
-      database: 'world',
-      entities: [Info, Users, ChatHistory],
+      host: process.env.DATABASE_HOST,
+      port: Number(process.env.DATABASE_PORT),
+      username: process.env.DATABASE_USER,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
+      entities: [Info, Users],
       synchronize: true,
       logging: true,
     }),
