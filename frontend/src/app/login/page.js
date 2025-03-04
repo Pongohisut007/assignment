@@ -26,7 +26,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:9001/auth/login', {
+      const response = await fetch('https://nongao.lol-th-no1.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ emailOrUsername, password }),
@@ -56,7 +56,7 @@ export default function LoginPage() {
 
       const token = data;
 
-      const userResponse = await fetch('http://localhost:9001/users/me', {
+      const userResponse = await fetch('https://nongao.lol-th-no1.com/api/users/me', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

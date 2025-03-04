@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body } from '@nestjs/common';
 import  {InfoService} from "./info.service"
 import { Info } from './info.entity';
 
-@Controller('info')
+@Controller('api/info')
 export class InfoController {
   constructor(private readonly infoService: InfoService) {}
 
