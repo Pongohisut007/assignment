@@ -14,6 +14,7 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { ChatHistory } from './chatHistory/chat-history.entity';
 import { ChatHistoryController } from './chatHistory/chat-history.controller';
 import { ChatHistoryService } from './chatHistory/chat-history.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
