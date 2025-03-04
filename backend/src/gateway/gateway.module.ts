@@ -1,8 +1,11 @@
-import { Module } from "@nestjs/common";
-import { Gateway } from "./gateway";
+// src/gateway/gateway.module.ts
+import { Module } from '@nestjs/common';
+import { Gateway } from './gateway';
+import { TypeormModule } from '../typeORM/typeorm.module'; // Import TypeormModule แทนการกำหนด ChatHistory แยก
 
 @Module({
+  imports: [TypeormModule], // ใช้ TypeormModule ที่มี UsersService และ ChatHistoryService
   providers: [Gateway],
-  exports: [Gateway], // Export Gateway เพื่อให้โมดูลอื่นใช้ได้
+  exports: [Gateway],
 })
 export class GatewayModule {}
