@@ -15,7 +15,7 @@ export class ChatHistoryService {
     private readonly chatHistoryRepository: Repository<ChatHistory>,
   ) {
     this.openai = new OpenAI({
-      apiKey: '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',
+      apiKey: '',
     });
   }
 
