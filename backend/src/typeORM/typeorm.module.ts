@@ -9,17 +9,18 @@ import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
-import { JwtStrategy } from './auth/jwt.strategy'; 
+import { JwtStrategy } from './auth/jwt.strategy';
+import 'dotenv/config';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'world',
+      host: process.env.DATABASE_HOST,
+      port: Number(process.env.DATABASE_PORT),
+      username: process.env.DATABASE_USER,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
       entities: [Info, Users],
       synchronize: true,
       logging: true,
