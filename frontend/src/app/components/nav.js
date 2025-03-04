@@ -9,7 +9,8 @@ import { useTheme } from 'next-themes';
 
 const navigation = [
   { name: 'Home', href: '/', current: true },
-  { name: 'Translation', href: '/Translation', current: false },
+  { name: 'Assistant', href: '/Assistant', current: false },
+  { name: "Forum", href: "/forum", current: false },
   { name: 'Projects', href: '/', current: false },
 ];
 
