@@ -22,9 +22,13 @@
   "dependencies": {
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.1",
+<<<<<<< HEAD
     "@nestjs/core": "^11.0.11",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
+=======
+    "@nestjs/core": "^11.0.1",
+>>>>>>> c77834b (.env fixed)
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/platform-socket.io": "^11.0.11",
     "@nestjs/typeorm": "^11.0.0",
