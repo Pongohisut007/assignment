@@ -2,12 +2,12 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="w-full py-14 bg-gray-900">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto text-center">
+    <footer className="w-full py-6 bg-gray-900">
+      <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mx-auto text-center">
           
           <p className="mt-4 text-gray-200">
-             Ai ตัวน้อย By.
+             Translation ตัวน้อย By.
           </p>
           <nav className="mt-6 flex justify-center space-x-6">
             <a href="#" className="text-gray-200 hover:text-gray-900">
