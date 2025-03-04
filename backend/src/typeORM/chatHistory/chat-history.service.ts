@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ChatHistory } from './chat-history.entity';
 import { Users } from '../users/users.entity';
-import OpenAI from 'openai'; // เปลี่ยนการ import ให้ตรงกับ SDK ล่าสุด
+import OpenAI from 'openai'; 
 
 @Injectable()
 export class ChatHistoryService {

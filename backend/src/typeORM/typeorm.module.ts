@@ -15,6 +15,8 @@ import { ChatHistory } from './chatHistory/chat-history.entity';
 import { ChatHistoryController } from './chatHistory/chat-history.controller';
 import { ChatHistoryService } from './chatHistory/chat-history.service';
 import 'dotenv/config';
+import { ESP32Service } from './esp32/esp32.service';
+import { ESP32Controller } from './esp32/esp32.controller';
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import 'dotenv/config';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Info, Users],
+      entities: [Info, Users, ChatHistory],
       synchronize: true,
       logging: true,
     }),
@@ -35,8 +37,21 @@ import 'dotenv/config';
       signOptions: { expiresIn: '60m' },
     }),
   ],
-  controllers: [InfoController, UsersController, AuthController, ChatHistoryController],
-  providers: [InfoService, UsersService, AuthService, JwtStrategy, ChatHistoryService],
-  exports: [TypeOrmModule, UsersService, ChatHistoryService], // Export UsersService และ ChatHistoryService
+  controllers: [
+    InfoController,
+    UsersController,
+    AuthController,
+    ChatHistoryController,
+    ESP32Controller,
+  ],
+  providers: [
+    InfoService,
+    UsersService,
+    AuthService,
+    JwtStrategy,
+    ChatHistoryService,
+    ESP32Service,
+  ],
+  exports: [TypeOrmModule, UsersService, ChatHistoryService, ESP32Service],
 })
 export class TypeormModule {}

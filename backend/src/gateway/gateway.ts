@@ -38,6 +38,7 @@ export class Gateway implements OnModuleInit {
     // ส่ง userId และ prompt ไปยัง getChatGPTresponse เพื่อรักษา context
     const aiResponse = await this.chatHistoryService.getChatGPTresponse(userId, prompt);
     const chatEntry = await this.chatHistoryService.create(user, prompt, aiResponse);
+    
 
     this.server.to(room).emit("onResponse", {
       prompt,

@@ -19,4 +19,4 @@ export class ChatHistoryController {
       throw new BadRequestException('Failed to get AI response');
     }
   }
-}
+}  

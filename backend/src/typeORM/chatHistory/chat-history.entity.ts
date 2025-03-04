@@ -2,13 +2,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Users } from '../users/users.entity';
 
-
 @Entity()
 export class ChatHistory {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Users, (user) => user.chatHistories, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Users, (user) => user.chatHistories)
   user: Users;
 
   @Column()
