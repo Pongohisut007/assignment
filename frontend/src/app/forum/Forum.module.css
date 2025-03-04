@@ -1,0 +1,68 @@
+/* Scrollbar Styles */
+.customScrollbar {
+  overflow-y: auto;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #4b5563 #1f2937; /* Firefox: thumb และ track */
+}
+
+.customScrollbar::-webkit-scrollbar {
+  width: 8px; /* ความกว้างของ scrollbar */
+}
+
+.customScrollbar::-webkit-scrollbar-track {
+  background: #1f2937; /* สีพื้นหลังของ track (dark mode) */
+  border-radius: 4px;
+}
+
+.customScrollbar::-webkit-scrollbar-thumb {
+  background: #4b5563; /* สีของ thumb */
+  border-radius: 4px;
+}
+
+.customScrollbar::-webkit-scrollbar-thumb:hover {
+  background: #6b7280; /* สีเมื่อ hover */
+}
+
+/* Light mode for scrollbar */
+:global(.dark) .customScrollbar::-webkit-scrollbar-track {
+  background: #e5e7eb; /* สีพื้นหลังของ track (light mode) */
+}
+
+:global(.dark) .customScrollbar::-webkit-scrollbar-thumb {
+  background: #6b7280; /* สีของ thumb (light mode) */
+}
+
+:global(.dark) .customScrollbar::-webkit-scrollbar-thumb:hover {
+  background: #4b5563; /* สีเมื่อ hover (light mode) */
+}
+
+/* Reply Connector Styles */
+.replyConnector {
+  position: relative;
+}
+
+.replyConnector::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #6b7280; /* สีเทาใน dark mode */
+}
+
+.replyConnector::after {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 20px; /* ปรับตำแหน่งให้เริ่มจากกึ่งกลาง avatar */
+  width: 20px;
+  height: 2px;
+  background: #6b7280;
+}
+
+/* Light mode for reply connector */
+:global(.dark) .replyConnector::before,
+:global(.dark) .replyConnector::after {
+  background: #9ca3af; /* สีเทาอ่อนใน light mode */
+}
