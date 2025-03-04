@@ -14,9 +14,7 @@ export class ChatHistoryService {
     @InjectRepository(ChatHistory)
     private readonly chatHistoryRepository: Repository<ChatHistory>,
   ) {
-    this.openai = new OpenAI({
-      apiKey: '',
-    });
+    this.openai = "key"
   }
 
   async getChatGPTresponse(userId: number, prompt: string): Promise<string> {
