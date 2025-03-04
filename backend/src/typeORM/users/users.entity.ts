@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { ChatHistory } from '../chatHistory/chat-history.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -27,4 +28,7 @@ export class Users {  // เปลี่ยนจาก Users → User
 
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
+
+  @OneToMany(() => ChatHistory, (chatHistory) => chatHistory.user)
+  chatHistories: ChatHistory[]; 
 }

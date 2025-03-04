@@ -1,3 +1,4 @@
+// src/typeORM/typeorm.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
@@ -10,7 +11,12 @@ import { UsersService } from './users/users.service';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { JwtStrategy } from './auth/jwt.strategy';
+import { ChatHistory } from './chatHistory/chat-history.entity';
+import { ChatHistoryController } from './chatHistory/chat-history.controller';
+import { ChatHistoryService } from './chatHistory/chat-history.service';
 import 'dotenv/config';
+import { ESP32Service } from './esp32/esp32.service';
+import { ESP32Controller } from './esp32/esp32.controller';
 
 @Module({
   imports: [
@@ -21,17 +27,31 @@ import 'dotenv/config';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Info, Users],
+      entities: [Info, Users, ChatHistory],
       synchronize: true,
       logging: true,
     }),
-    TypeOrmModule.forFeature([Info, Users]),
+    TypeOrmModule.forFeature([Info, Users, ChatHistory]),
     JwtModule.register({
-      secret: 'your-secret-key', // ต้องตรงกับ JwtStrategy
+      secret: 'your-secret-key',
       signOptions: { expiresIn: '60m' },
     }),
   ],
-  controllers: [InfoController, UsersController, AuthController],
-  providers: [InfoService, UsersService, AuthService, JwtStrategy], // เพิ่ม JwtStrategy
+  controllers: [
+    InfoController,
+    UsersController,
+    AuthController,
+    ChatHistoryController,
+    ESP32Controller,
+  ],
+  providers: [
+    InfoService,
+    UsersService,
+    AuthService,
+    JwtStrategy,
+    ChatHistoryService,
+    ESP32Service,
+  ],
+  exports: [TypeOrmModule, UsersService, ChatHistoryService, ESP32Service],
 })
 export class TypeormModule {}

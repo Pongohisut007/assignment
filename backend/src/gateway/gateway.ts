@@ -1,40 +1,63 @@
+// src/gateway/gateway.ts
 import { OnModuleInit } from "@nestjs/common";
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server } from "socket.io";
+import { ChatHistoryService } from "../typeORM/chatHistory/chat-history.service";
+import { UsersService } from "../typeORM/users/users.service";
 
-@WebSocketGateway(9002, { cors: { origin: 'http://localhost:3000' } }) // กำหนด port และ CORS
+@WebSocketGateway(9002, { cors: { origin: 'http://localhost:3000' } })
 export class Gateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
 
+  constructor(
+    private readonly chatHistoryService: ChatHistoryService,
+    private readonly usersService: UsersService,
+  ) {}
+
   onModuleInit() {
     this.server.on("connection", (socket: any) => {
       console.log("New Client Connected: ", socket.id);
-
       socket.on("disconnect", () => {
         console.log("Client Disconnected: ", socket.id);
       });
     });
   }
 
-  @SubscribeMessage("newMessage")
-  onMessage(@MessageBody() data: any) {
-    console.log("Received Message:", data);
-    this.server.emit("onMessage", {
-      msg: "New Message",
-      content: data,
+  @SubscribeMessage("newPrompt")
+  async handleNewPrompt(@MessageBody() { userId, prompt }: { userId: number; prompt: string }) {
+    const room = `user_${userId}`;
+    console.log(`Received Prompt from User ${userId}: ${prompt}`);
+
+    const user = await this.usersService.findOne(userId);
+    if (!user) {
+      this.server.to(room).emit("error", "User not found");
+      return;
+    }
+
+    // ส่ง userId และ prompt ไปยัง getChatGPTresponse เพื่อรักษา context
+    const aiResponse = await this.chatHistoryService.getChatGPTresponse(userId, prompt);
+    const chatEntry = await this.chatHistoryService.create(user, prompt, aiResponse);
+    
+
+    this.server.to(room).emit("onResponse", {
+      prompt,
+      response: aiResponse,
+      timestamp: chatEntry.timestamp,
     });
+
+    const history = await this.chatHistoryService.findByUser(userId);
+    this.server.to(room).emit("chatHistory", history);
   }
 
-  // ฟังก์ชันสำหรับส่งข้อมูลจาก server ไป client
-  sendRealTimeData(data: any) {
-    this.server.emit("realTimeData", data);
-  }
-  
-  @SubscribeMessage('startTest')
-  handleStartTest() {
-    setInterval(() => {
-      this.sendRealTimeData(`Test data at ${new Date().toLocaleTimeString()}`);
-    }, 2000);
+  @SubscribeMessage("joinRoom")
+  handleJoinRoom(@MessageBody() userId: number) {
+    const room = `user_${userId}`;
+    this.server.socketsJoin(room);
+    console.log(`User ${userId} joined room: ${room}`);
+
+    this.chatHistoryService.findByUser(userId).then(history => {
+      this.server.to(room).emit("chatHistory", history);
+    });
   }
 }
