@@ -1,5 +1,6 @@
 import './globals.css';
 import RootLayoutClient from './RootLayout.client';
+import { ThemeProvider } from 'next-themes';
 
 export const metadata = {
   title: 'My App',
@@ -10,7 +11,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="antialiased">
-        <RootLayoutClient>{children}</RootLayoutClient>
+        <ThemeProvider attribute="class" defaultTheme="dark">
+          <RootLayoutClient>{children}</RootLayoutClient>
+        </ThemeProvider>
       </body>
     </html>
   );

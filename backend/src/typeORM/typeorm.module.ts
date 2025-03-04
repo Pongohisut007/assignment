@@ -1,5 +1,4 @@
-// src/typeORM/typeorm.module.ts
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { Info } from './info/info.entity';
@@ -14,6 +13,7 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { ChatHistory } from './chatHistory/chat-history.entity';
 import { ChatHistoryController } from './chatHistory/chat-history.controller';
 import { ChatHistoryService } from './chatHistory/chat-history.service';
+import { GatewayModule } from '../gateway/gateway.module';
 import 'dotenv/config';
 import { ESP32Service } from './esp32/esp32.service';
 import { ESP32Controller } from './esp32/esp32.controller';
@@ -36,22 +36,10 @@ import { ESP32Controller } from './esp32/esp32.controller';
       secret: 'your-secret-key',
       signOptions: { expiresIn: '60m' },
     }),
+    forwardRef(() => GatewayModule), // ใช้ forwardRef
   ],
-  controllers: [
-    InfoController,
-    UsersController,
-    AuthController,
-    ChatHistoryController,
-    ESP32Controller,
-  ],
-  providers: [
-    InfoService,
-    UsersService,
-    AuthService,
-    JwtStrategy,
-    ChatHistoryService,
-    ESP32Service,
-  ],
-  exports: [TypeOrmModule, UsersService, ChatHistoryService, ESP32Service],
+  controllers: [InfoController, UsersController, AuthController, ChatHistoryController],
+  providers: [InfoService, UsersService, AuthService, JwtStrategy, ChatHistoryService],
+  exports: [TypeOrmModule, UsersService, ChatHistoryService],
 })
 export class TypeormModule {}

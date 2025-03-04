@@ -1,10 +1,9 @@
-// src/gateway/gateway.module.ts
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { Gateway } from './gateway';
-import { TypeormModule } from '../typeORM/typeorm.module'; // Import TypeormModule แทนการกำหนด ChatHistory แยก
+import { TypeormModule } from '../typeORM/typeorm.module';
 
 @Module({
-  imports: [TypeormModule], // ใช้ TypeormModule ที่มี UsersService และ ChatHistoryService
+  imports: [forwardRef(() => TypeormModule)], // ใช้ forwardRef
   providers: [Gateway],
   exports: [Gateway],
 })

@@ -1,9 +1,9 @@
 // src/gateway/gateway.ts
-import { OnModuleInit } from "@nestjs/common";
-import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
-import { Server } from "socket.io";
-import { ChatHistoryService } from "../typeORM/chatHistory/chat-history.service";
-import { UsersService } from "../typeORM/users/users.service";
+import { OnModuleInit } from '@nestjs/common';
+import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
+import { ChatHistoryService } from '../typeORM/chatHistory/chat-history.service';
+import { UsersService } from '../typeORM/users/users.service';
 
 @WebSocketGateway(9002, { cors: { origin: 'http://localhost:3000' } })
 export class Gateway implements OnModuleInit {
@@ -16,48 +16,50 @@ export class Gateway implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    this.server.on("connection", (socket: any) => {
-      console.log("New Client Connected: ", socket.id);
-      socket.on("disconnect", () => {
-        console.log("Client Disconnected: ", socket.id);
+    this.server.on('connection', (socket: any) => {
+      console.log('New Client Connected: ', socket.id);
+      socket.on('disconnect', () => {
+        console.log('Client Disconnected: ', socket.id);
       });
     });
   }
 
-  @SubscribeMessage("newPrompt")
-  async handleNewPrompt(@MessageBody() { userId, prompt }: { userId: number; prompt: string }) {
+  @SubscribeMessage('newPrompt')
+  async handleNewPrompt(@MessageBody() { userId, prompt }: { userId: number; prompt: string }): Promise<string> {
     const room = `user_${userId}`;
     console.log(`Received Prompt from User ${userId}: ${prompt}`);
 
     const user = await this.usersService.findOne(userId);
     if (!user) {
-      this.server.to(room).emit("error", "User not found");
-      return;
+      this.server.to(room).emit('error', 'User not found');
+      return '';
     }
 
-    // ส่ง userId และ prompt ไปยัง getChatGPTresponse เพื่อรักษา context
     const aiResponse = await this.chatHistoryService.getChatGPTresponse(userId, prompt);
     const chatEntry = await this.chatHistoryService.create(user, prompt, aiResponse);
     
 
-    this.server.to(room).emit("onResponse", {
+    const logData = {
       prompt,
       response: aiResponse,
       timestamp: chatEntry.timestamp,
-    });
+    };
 
+    this.server.to(room).emit('onLog', logData);
     const history = await this.chatHistoryService.findByUser(userId);
-    this.server.to(room).emit("chatHistory", history);
+    this.server.to(room).emit('chatHistory', history);
+
+    return aiResponse;
   }
 
-  @SubscribeMessage("joinRoom")
+  @SubscribeMessage('joinRoom')
   handleJoinRoom(@MessageBody() userId: number) {
     const room = `user_${userId}`;
     this.server.socketsJoin(room);
     console.log(`User ${userId} joined room: ${room}`);
 
     this.chatHistoryService.findByUser(userId).then(history => {
-      this.server.to(room).emit("chatHistory", history);
+      this.server.to(room).emit('chatHistory', history);
     });
   }
 }
