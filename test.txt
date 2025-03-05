@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod" # ใช้ Let's Encrypt
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - nongao.lol-th-no1.com
+    secretName: test-ingress-tls  # ใช้ Secret ที่สร้างไว้
+  rules:
+  - host: nongao.lol-th-no1.com
+    http:
+      paths:
+      # - path: "/(.*)"
+      #   pathType: ImplementationSpecific
+      #   backend:
+      #     service:
+      #       name: client-service
+      #       port:
+      #         number: 3000
+
+      - path: "/api(/|$)(.*)"
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: server-service
+            port:
+              number: 3001
+
