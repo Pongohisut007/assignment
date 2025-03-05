@@ -6,7 +6,7 @@ import { CreateUserDto } from './create-user.dto';
 import { Users, UserRole } from './users.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@Controller('users')
+@Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

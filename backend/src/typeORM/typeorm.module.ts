@@ -1,5 +1,4 @@
-// src/typeORM/typeorm.module.ts
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { Users } from './users/users.entity';
@@ -11,13 +10,11 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { ChatHistory } from './chatHistory/chat-history.entity';
 import { ChatHistoryController } from './chatHistory/chat-history.controller';
 import { ChatHistoryService } from './chatHistory/chat-history.service';
+import { GatewayModule } from '../gateway/gateway.module';
 import 'dotenv/config';
 import { Post } from './post/entities/post.entity';
 import { Comment } from './comment/entities/comment.entity';
 import { Tag } from './tag/entities/tag.entity';
-import { CommentController } from './comment/comment.controller';
-import { PostController } from './post/post.controller';
-import { CommentService } from './comment/comment.service';
 
 @Module({
   imports: [
@@ -37,8 +34,10 @@ import { CommentService } from './comment/comment.service';
       secret: 'your-secret-key',
       signOptions: { expiresIn: '60m' },
     }),
+    forwardRef(() => GatewayModule), // ใช้ forwardRef
   ],
-  providers: [],
-  exports: [],
+  controllers: [UsersController, AuthController, ChatHistoryController],
+  providers: [UsersService, AuthService, JwtStrategy, ChatHistoryService],
+  exports: [TypeOrmModule, UsersService, ChatHistoryService],
 })
 export class TypeormModule {}

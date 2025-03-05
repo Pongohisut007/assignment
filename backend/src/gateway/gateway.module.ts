@@ -1,11 +1,9 @@
-// src/gateway/gateway.module.ts
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { Gateway } from './gateway';
-import { UsersModule } from 'src/typeORM/users/users.module';
-import { ChatHistoryModule } from 'src/typeORM/chatHistory/chat-history.module';
+import { TypeormModule } from '../typeORM/typeorm.module';
 
 @Module({
-  imports: [UsersModule, ChatHistoryModule],
+  imports: [forwardRef(() => TypeormModule)], // ใช้ forwardRef
   providers: [Gateway],
   exports: [],
 })

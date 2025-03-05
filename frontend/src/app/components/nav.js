@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useTheme } from 'next-themes';
 
 const navigation = [
   { name: 'Home', href: '/', current: true },
-  { name: 'Translation', href: '/Translation', current: false },
+  { name: 'Assistant', href: '/Assistant', current: false },
+  { name: "Forum", href: "/forum", current: false },
   { name: 'Projects', href: '/', current: false },
 ];
 
@@ -29,6 +31,7 @@ export default function Navbar() {
   const [hydrated, setHydrated] = useState(false);
   const [usernameInitial, setUsernameInitial] = useState('');
   const router = useRouter();
+  const { theme, setTheme } = useTheme(); // เพิ่ม useTheme
 
   useEffect(() => {
     const checkAuth = () => {
@@ -71,15 +74,18 @@ export default function Navbar() {
     router.push('/login');
   };
 
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
   if (!hydrated) return null;
 
-  // กรอง navigation ให้แสดงเฉพาะ "Home" ถ้ายังไม่ล็อกอิน
   const filteredNavigation = isAuthenticated
     ? navigation
-    : navigation.filter(item => item.name === 'Home');
+    : navigation.filter((item) => item.name === 'Home');
 
   return (
-    <nav className="bg-gray-800">
+    <nav className="bg-gray-800 dark:bg-gray-200">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           {/* ฝั่งซ้าย: โลโก้ */}
@@ -87,10 +93,13 @@ export default function Navbar() {
             <Link href="/">
               <img
                 alt="Your Company"
-                src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-                className="h-8 w-auto cursor-pointer"
+                src="./output.png"
+                className="h-16 w-auto cursor-pointer"
               />
             </Link>
+            <div className="text-xl font-bold text-fuchsia-600 dark:text-fuchsia-700">
+              L i t t l e - C h a t
+            </div>
           </div>
 
           {/* ฝั่งขวา: Navigation และ Sign In/User Menu */}
@@ -101,7 +110,7 @@ export default function Navbar() {
                 <Link key={item.name} href={item.href} legacyBehavior>
                   <a
                     className={classNames(
-                      item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                      item.current ? ' text-white hover:bg-gray-700 dark:bg-gray-300 dark:text-black' : 'text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black',
                       'rounded-md px-3 py-2 text-sm font-medium'
                     )}
                   >
@@ -111,25 +120,33 @@ export default function Navbar() {
               ))}
             </div>
 
+            {/* Theme Switch Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full bg-gray-700 text-white dark:bg-gray-300 dark:text-black hover:bg-gray-500"
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
+
             {/* Sign In หรือ User Menu */}
             {isAuthenticated ? (
               <>
-                <button className="relative p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:outline-none">
+                <button className="relative p-1 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black focus:ring-2 focus:ring-white focus:outline-none">
                   <span className="sr-only">View notifications</span>
                   <BellIcon className="size-6" aria-hidden="true" />
                 </button>
                 <Menu as="div" className="relative">
-                  <MenuButton className="relative flex items-center justify-center rounded-full bg-gray-800 border-2 border-white text-sm text-white focus:ring-2 focus:ring-white w-8 h-8">
+                  <MenuButton className="relative flex items-center justify-center rounded-full bg-gray-800 border-2 border-white text-sm text-white dark:bg-gray-300 dark:border-gray-400 hover:bg-gray-700 dark:text-black focus:ring-2 focus:ring-white w-8 h-8">
                     <span className="sr-only">Open user menu</span>
                     <span className="text-lg font-medium">
                       {usernameInitial || 'U'}
                     </span>
                   </MenuButton>
-                  <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+                  <MenuItems className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-200 rounded-md shadow-lg py-1">
                     <MenuItem>
                       {({ active }) => (
                         <Link href="" legacyBehavior>
-                          <a className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
+                          <a className={classNames(active ? 'bg-gray-100 dark:bg-gray-300' : '', 'block px-4 py-2 text-sm text-gray-700 dark:text-gray-800')}>
                             Your Profile
                           </a>
                         </Link>
@@ -138,7 +155,7 @@ export default function Navbar() {
                     <MenuItem>
                       {({ active }) => (
                         <Link href="" legacyBehavior>
-                          <a className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
+                          <a className={classNames(active ? 'bg-gray-100 dark:bg-gray-300' : '', 'block px-4 py-2 text-sm text-gray-700 dark:text-gray-800')}>
                             Settings
                           </a>
                         </Link>
@@ -148,7 +165,7 @@ export default function Navbar() {
                       {({ active }) => (
                         <button
                           onClick={handleLogout}
-                          className={classNames(active ? 'bg-gray-100' : '', 'block w-full text-left px-4 py-2 text-sm text-gray-700')}
+                          className={classNames(active ? 'bg-gray-100 dark:bg-gray-300' : '', 'block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-800')}
                         >
                           Logout
                         </button>
@@ -159,7 +176,7 @@ export default function Navbar() {
               </>
             ) : (
               <Link href="/login" legacyBehavior>
-                <a className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700">
+                <a className="bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600">
                   Sign In
                 </a>
               </Link>
@@ -170,7 +187,7 @@ export default function Navbar() {
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="relative p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-none"
+              className="relative p-2 text-gray-400 hover:bg-gray-700 hover:text-white dark:text-gray-600 dark:hover:bg-gray-400 dark:hover:text-black focus:ring-2 focus:ring-white focus:outline-none"
             >
               <span className="sr-only">Open main menu</span>
               {menuOpen ? (
@@ -190,7 +207,7 @@ export default function Navbar() {
             <Link key={item.name} href={item.href} legacyBehavior>
               <a
                 className={classNames(
-                  item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                  item.current ? 'bg-gray-900 text-white dark:bg-gray-300 dark:text-black' : 'text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black',
                   'block rounded-md px-3 py-2 text-base font-medium'
                 )}
               >
@@ -198,16 +215,22 @@ export default function Navbar() {
               </a>
             </Link>
           ))}
+          <button
+            onClick={toggleTheme}
+            className="block w-full text-left px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black"
+          >
+            {theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          </button>
           {isAuthenticated ? (
             <button
               onClick={handleLogout}
-              className="block w-full text-left px-3 py-2 text-base text-gray-300 hover:bg-gray-700 hover:text-white rounded-md"
+              className="block w-full text-left px-3 py-2 text-base text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black"
             >
               Logout
             </button>
           ) : (
             <Link href="/login" legacyBehavior>
-              <a className="block w-full text-left px-3 py-2 text-base text-gray-300 hover:bg-gray-700 hover:text-white rounded-md">
+              <a className="block w-full text-left px-3 py-2 text-base text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black">
                 Sign In
               </a>
             </Link>
