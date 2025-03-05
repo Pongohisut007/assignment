@@ -20,7 +20,9 @@ export default function Chat() {
     const storedUsername = "User1"; // สมมติ username
     sessionStorage.setItem("chatUsername", storedUsername);
 
-    const newSocket = io("http://localhost:9002", { transports: ["websocket"] });
+    const newSocket = io("http://localhost:9002", {
+      transports: ["websocket"],
+    });
 
     newSocket.on("connect", () => {
       console.log("Connected to WebSocket server:", newSocket.id);
@@ -100,11 +102,15 @@ export default function Chat() {
         {isLoading && (
           <div className="flex justify-center items-center space-x-2 mb-4">
             <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500 dark:border-blue-600"></div>
-            <span className="text-gray-400 dark:text-gray-600">Grok is thinking...</span>
+            <span className="text-gray-400 dark:text-gray-600">
+              Grok is thinking...
+            </span>
           </div>
         )}
         {chatHistory.length === 0 && !isLoading && (
-          <div className="text-center text-gray-500 dark:text-gray-400">No messages yet. Start chatting!</div>
+          <div className="text-center text-gray-500 dark:text-gray-400">
+            No messages yet. Start chatting!
+          </div>
         )}
         {chatHistory.map((msg, index) => {
           const [displayUsername, messageContent] = msg.message.split(" : ", 2);
