@@ -4,37 +4,54 @@ import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import { useTheme } from "next-themes";
 
-const head = "https://nongao.lol-th-no1.com/api"; // URL ของ backend
+const head = "https://nongao.lol-th-no1.com/api"; // Backend URL
+const socket = io(head); // Initialize socket outside the component
+
+// Utility function to get or set username, avoiding SSR mismatch
+const getOrSetUsername = () => {
+  if (typeof window === "undefined") return "Guest"; // Default for SSR
+  const storedUsername = sessionStorage.getItem("chatUsername");
+  if (storedUsername) return storedUsername;
+  const newUsername = `User-${Math.floor(Math.random() * 10000)}`;
+  sessionStorage.setItem("chatUsername", newUsername);
+  return newUsername;
+};
 
 export default function Chat() {
-  const [selectedRoom, setSelectedRoom] = useState(null); // ห้องที่เลือก
-  const [chatHistory, setChatHistory] = useState({ sports: [], tech: [] }); // ประวัติแชทแยกตามห้อง
-  const [isLoading, setIsLoading] = useState(false);
-  const [inputMessage, setInputMessage] = useState("");
-  const [isSending, setIsSending] = useState(false);
-  const [username, setUsername] = useState("");
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false); // สถานะ Modal
-  const [selectedUser, setSelectedUser] = useState(null); // ข้อมูลผู้ใช้ที่เลือก
-  const { theme } = useTheme();
-  const messagesEndRef = useRef(null);
+  const [selectedRoom, setSelectedRoom] = useState(null); // Selected room
+  const [chatHistory, setChatHistory] = useState({ sports: [], tech: [] }); // Chat history per room
+  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [inputMessage, setInputMessage] = useState(""); // Input message
+  const [isSending, setIsSending] = useState(false); // Sending state
+  const [username, setUsername] = useState(getOrSetUsername()); // Username
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false); // Profile modal state
+  const [selectedUser, setSelectedUser] = useState(null); // Selected user for profile
+  const [isClient, setIsClient] = useState(false); // Client-side flag
+  const { theme } = useTheme(); // Theme from next-themes
+  const messagesEndRef = useRef(null); // Ref for scrolling to latest message
 
-  // ตั้งค่า username
-  const checkAndSetUsername = () => {
-    const storedUsername = sessionStorage.getItem("chatUsername");
-    if (storedUsername) {
-      setUsername(storedUsername);
-    } else {
-      const newUsername = `User-${Math.floor(Math.random() * 10000)}`;
-      setUsername(newUsername);
-      sessionStorage.setItem("chatUsername", newUsername);
-    }
+  // State for Suggestions
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [mentionQuery, setMentionQuery] = useState("");
+
+  // Mock list of users separated by room (replace with backend data if available)
+  const userListByRoom = {
+    sports: [
+      "ronaldo",
+      "เซียนบอล",
+    ],
+    tech: [
+      "จารย์ปัญ",
+      "เซียนโค้ด",
+    ],
   };
 
+  // Effect for client-side initialization
   useEffect(() => {
-    const userId = 1; // สมมติ userId
-    checkAndSetUsername();
+    setIsClient(true); // Mark as client-side after mount
 
-    // Mock ข้อความเริ่มต้นพร้อมโปรไฟล์
+    // Mock chat history
     const mockChatHistory = {
       sports: [
         { sender: "user", message: "ไอตูน : ทีมไหนชนะเมื่อวาน?", profilePic: "https://via.placeholder.com/40?text=U1", userId: "1234" },
@@ -51,6 +68,7 @@ export default function Chat() {
     };
     setChatHistory(mockChatHistory);
 
+    // WebSocket event listeners
     socket.on("connect", () => {
       console.log("Connected to WebSocket server:", socket.id);
     });
@@ -83,6 +101,7 @@ export default function Chat() {
       setIsLoading(false);
     });
 
+    // Cleanup WebSocket listeners
     return () => {
       socket.off("onLog");
       socket.off("chatHistory");
@@ -91,18 +110,51 @@ export default function Chat() {
     };
   }, []);
 
+  // Scroll to the latest message when chat history updates
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatHistory, selectedRoom]);
 
-  // เข้าร่วมห้อง
+  // Join a room
   const joinRoom = (room) => {
     setSelectedRoom(room);
     setIsLoading(true);
     socket.emit("joinRoom", { userId: 1, room });
+    setShowSuggestions(false); // Reset suggestions when switching rooms
+    setSuggestions([]);
   };
 
-  // ส่ง prompt
+  // Handle input change and detect @ with room-specific suggestions
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setInputMessage(value);
+
+    const lastWord = value.split(" ").pop();
+    if (lastWord.startsWith("@") && selectedRoom) {
+      const query = lastWord.slice(1).toLowerCase();
+      setMentionQuery(query);
+      const roomUsers = userListByRoom[selectedRoom] || [];
+      const filteredSuggestions = roomUsers.filter((user) =>
+        user.toLowerCase().startsWith(query)
+      );
+      setSuggestions(filteredSuggestions);
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+      setSuggestions([]);
+    }
+  };
+
+  // Select a suggestion
+  const selectSuggestion = (suggestion) => {
+    const words = inputMessage.split(" ");
+    words[words.length - 1] = `@${suggestion} `;
+    setInputMessage(words.join(" "));
+    setShowSuggestions(false);
+    setSuggestions([]);
+  };
+
+  // Send a prompt to the backend
   const sendPrompt = async () => {
     if (inputMessage.trim() !== "" && selectedRoom) {
       setIsSending(true);
@@ -126,6 +178,7 @@ export default function Chat() {
         }
 
         setInputMessage("");
+        setShowSuggestions(false); // Close suggestions after sending
       } catch (error) {
         console.error("Error sending prompt:", error);
         alert("Failed to send prompt!");
@@ -137,19 +190,19 @@ export default function Chat() {
     }
   };
 
-  // เปิด Modal โปรไฟล์
+  // Open profile modal
   const openProfileModal = (user) => {
     setSelectedUser(user);
     setIsProfileModalOpen(true);
   };
 
-  // ปิด Modal โปรไฟล์
+  // Close profile modal
   const closeProfileModal = () => {
     setIsProfileModalOpen(false);
     setSelectedUser(null);
   };
 
-  // หัวข้อห้องแชท
+  // Get room title based on selected room
   const getRoomTitle = () => {
     switch (selectedRoom) {
       case "sports":
@@ -169,7 +222,7 @@ export default function Chat() {
           className="p-4 bg-gray-800 dark:bg-gray-200 rounded-lg cursor-pointer hover:bg-gray-700 dark:hover:bg-gray-300 transition"
           onClick={() => joinRoom("sports")}
         >
-          <h2 className="text-lg font-bold">ห้องกีฬา</h2>
+          <h2 className="text-lg font-bold mb-2">ห้องกีฬา</h2>
           <p className="text-sm text-gray-400 dark:text-gray-600">คุยเรื่องกีฬาทุกประเภท</p>
         </div>
         <div
@@ -185,17 +238,18 @@ export default function Chat() {
       <div className="w-3/4 flex flex-col flex-grow p-4 sm:p-12 overflow-hidden">
         {/* Room Title */}
         <div className="mb-4 text-center border-b border-gray-700 dark:border-gray-300 pb-2">
-          <h1 className="text-2xl font-bold text-white dark:text-black">{getRoomTitle()}</h1>
+          <h1 className="text-2xl font-bold text-white dark:text-black mb-3">{getRoomTitle()}</h1>
         </div>
 
         {/* Chat Display Area */}
         <div className="p-4 flex-grow overflow-y-auto rounded-lg w-full max-w-[50rem] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:p-4 sm:h-80 sm:mb-4 sm:max-w-[50rem] mx-auto">
-          {(!selectedRoom || chatHistory[selectedRoom]?.length === 0) && !isLoading && (
+          {isClient && (!selectedRoom || chatHistory[selectedRoom]?.length === 0) && !isLoading && (
             <div className="text-center text-gray-500 dark:text-gray-400">
               {selectedRoom ? "No messages yet. Start chatting!" : "Please select a room to start chatting!"}
             </div>
           )}
-          {selectedRoom &&
+          {isClient &&
+            selectedRoom &&
             chatHistory[selectedRoom]?.map((msg, index) => {
               const [displayUsername, messageContent] = msg.message.split(" : ", 2);
               const storedUsername = sessionStorage.getItem("chatUsername");
@@ -237,15 +291,18 @@ export default function Chat() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Box for Sending Prompt */}
-        <div className="flex space-x-2 bg-[#313335] p-4 rounded-3xl w-full max-w-[50rem] mx-auto sm:p-6 sm:rounded-3xl shrink-0">
+        {/* Input Box with Suggestions */}
+        <div className="relative flex space-x-2 bg-[#313335] p-4 rounded-3xl w-full max-w-[50rem] mx-auto sm:p-6 sm:rounded-3xl shrink-0">
           <input
             type="text"
             className="flex-grow bg-[#313335] outline-none text-white text-sm sm:text-base"
             placeholder="Type your message..."
             value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendPrompt()}
+            onChange={handleInputChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") sendPrompt();
+              if (e.key === "Escape") setShowSuggestions(false);
+            }}
             disabled={isSending || !selectedRoom}
           />
           <button
@@ -257,11 +314,26 @@ export default function Chat() {
           >
             {isSending ? "Sending..." : "Send"}
           </button>
+
+          {/* Suggestion Dropdown */}
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="absolute bottom-14 left-0 w-full max-w-[50rem] bg-gray-800 rounded-lg shadow-lg max-h-40 overflow-y-auto z-10">
+              {suggestions.map((suggestion, index) => (
+                <div
+                  key={index}
+                  className="p-2 hover:bg-gray-700 cursor-pointer text-white"
+                  onClick={() => selectSuggestion(suggestion)}
+                >
+                  @{suggestion}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Profile Modal */}
-      {isProfileModalOpen && selectedUser && (
+      {isClient && isProfileModalOpen && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-gray-800 dark:bg-gray-200 p-6 rounded-lg w-full max-w-md">
             <div className="flex justify-between items-center mb-4">

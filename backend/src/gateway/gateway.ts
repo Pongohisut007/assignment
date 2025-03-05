@@ -10,7 +10,7 @@ import { Server } from 'socket.io';
 import { ChatHistoryService } from '../typeORM/chatHistory/chat-history.service';
 import { UsersService } from '../typeORM/users/users.service';
 
-@WebSocketGateway(9002, { cors: { origin: 'http://localhost:3000' } })
+@WebSocketGateway(9003, { cors: { origin: 'http://localhost:3000' } })
 export class Gateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;

@@ -15,6 +15,8 @@ export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
 
+  const localA = "http://localhost:3001/";
+  const realA = "https://nongao.lol-th-no1.com"
   // Sync hydration
   useEffect(() => {
     setHydrated(true); // ตั้งค่า hydrated เป็น true หลังจาก client โหลด
@@ -26,7 +28,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://nongao.lol-th-no1.com/api/auth/login', {
+      const response = await fetch('http://localhost:3001/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ emailOrUsername, password }),
@@ -56,7 +58,7 @@ export default function LoginPage() {
 
       const token = data;
 
-      const userResponse = await fetch('https://nongao.lol-th-no1.com/api/users/me', {
+      const userResponse = await fetch('http://localhost:3001/api/users/me', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

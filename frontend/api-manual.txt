@@ -16,7 +16,7 @@ get:  getAllPostCommentSubcomment (get ได้เลย) </api/post>
 post: createComment </api/comment>
 {
     "owner": <ownerId>,
-    "post": <postId>,
+    "post_id": <postId>,
     "comment": <commentMessage>"
 }
 
