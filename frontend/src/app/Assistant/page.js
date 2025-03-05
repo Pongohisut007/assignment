@@ -51,7 +51,10 @@ export default function Chat() {
   useEffect(() => {
     setIsClient(true); // Mark as client-side after mount
 
-    // Mock chat history
+    const newSocket = io("http://localhost:9002", {
+      transports: ["websocket"],
+    });
+    // Mock ข้อความเริ่มต้นพร้อมโปรไฟล์
     const mockChatHistory = {
       sports: [
         { sender: "user", message: "ไอตูน : ทีมไหนชนะเมื่อวาน?", profilePic: "https://via.placeholder.com/40?text=U1", userId: "1234" },

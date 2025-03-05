@@ -27,3 +27,12 @@ post: createSubcomment </api/sub-comment>
  
 
 *******************************************
+
+CHAT
+
+postChat
+{
+	"owner"   : <user_id>,
+	"room_id" : <room_id>,
+	"message" : <message_str>,
+}
