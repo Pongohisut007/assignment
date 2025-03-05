@@ -155,6 +155,13 @@ export default function Forum() {
     setReplyInputs({});
   };
 
+  const closeThreadModal = () => {
+    setSelectedThread(null);
+    setComments([]);
+    setNewComment("");
+    setReplyInputs({});
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white dark:bg-gray-100 dark:text-black p-6">
       <div className="max-w-4xl mx-auto">
@@ -169,40 +176,52 @@ export default function Forum() {
         {/* Modal สร้างกระทู้ */}
         {isCreateModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-gray-800 dark:bg-gray-200 p-6 rounded-lg w-full max-w-md shadow-xl">
-              <h2 className="text-xl font-bold mb-4">สร้างกระทู้ใหม่</h2>
-              <form onSubmit={handleCreateThread} className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="หัวข้อกระทู้"
-                  value={newThread.title}
-                  onChange={(e) => setNewThread({ ...newThread, title: e.target.value })}
-                  className="w-full p-2 rounded-lg text-black dark:bg-gray-100 border border-gray-600 dark:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <textarea
-                  placeholder="เนื้อหากระทู้"
-                  value={newThread.content}
-                  onChange={(e) => setNewThread({ ...newThread, content: e.target.value })}
-                  className="w-full p-2 rounded-lg text-black dark:bg-gray-100 border border-gray-600 dark:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 h-32"
-                />
-                <input
-                  type="text"
-                  placeholder="แท็ก (คั่นด้วย ,)"
-                  value={newThread.tags}
-                  onChange={(e) => setNewThread({ ...newThread, tags: e.target.value })}
-                  className="w-full p-2 rounded-lg text-black dark:bg-gray-100 border border-gray-600 dark:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <div className="flex justify-end space-x-2">
+            <div className="bg-gray-800 dark:bg-gray-200 p-6 rounded-xl w-full max-w-md shadow-2xl relative border border-gray-700 dark:border-gray-300 transform transition-all duration-300 scale-100 hover:scale-105">
+              <button
+                onClick={() => setIsCreateModalOpen(false)}
+                className="absolute top-3 right-3 w-8 h-8 bg-gray-700 dark:bg-gray-300 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-200 dark:text-gray-600 dark:hover:text-gray-800 text-xl font-bold transition-colors duration-200 hover:bg-gray-600 dark:hover:bg-gray-400"
+              >
+                ×
+              </button>
+              <h2 className="text-2xl font-bold mb-6 text-gray-100 dark:text-gray-900 bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent">สร้างกระทู้ใหม่</h2>
+              <form onSubmit={handleCreateThread} className="space-y-5">
+                <div>
+                  <input
+                    type="text"
+                    placeholder="หัวข้อกระทู้"
+                    value={newThread.title}
+                    onChange={(e) => setNewThread({ ...newThread, title: e.target.value })}
+                    className="w-full p-3 rounded-lg text-gray-200 dark:text-gray-900 bg-gray-900 dark:bg-gray-100 border border-gray-600 dark:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 dark:placeholder-gray-400 shadow-sm transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <textarea
+                    placeholder="เนื้อหากระทู้"
+                    value={newThread.content}
+                    onChange={(e) => setNewThread({ ...newThread, content: e.target.value })}
+                    className="w-full p-3 rounded-lg text-gray-200 dark:text-gray-900 bg-gray-900 dark:bg-gray-100 border border-gray-600 dark:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 dark:placeholder-gray-400 shadow-sm resize-none h-36 transition-all duration-200"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="แท็ก (คั่นด้วย ,)"
+                    value={newThread.tags}
+                    onChange={(e) => setNewThread({ ...newThread, tags: e.target.value })}
+                    className="w-full p-3 rounded-lg text-gray-200 dark:text-gray-900 bg-gray-900 dark:bg-gray-100 border border-gray-600 dark:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 dark:placeholder-gray-400 shadow-sm transition-all duration-200"
+                  />
+                </div>
+                <div className="flex justify-end space-x-3">
                   <button
                     type="button"
                     onClick={() => setIsCreateModalOpen(false)}
-                    className="px-4 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 dark:bg-gray-300 dark:hover:bg-gray-400 dark:text-black shadow-md transition-colors duration-300"
+                    className="px-5 py-2 bg-gray-600 text-gray-200 dark:bg-gray-300 dark:text-gray-900 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-400 shadow-md transition-all duration-300 transform hover:scale-105"
                   >
                     ยกเลิก
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 shadow-md transition-colors duration-300"
+                    className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 shadow-md transition-all duration-300 transform hover:scale-105"
                   >
                     สร้าง
                   </button>
@@ -242,8 +261,16 @@ export default function Forum() {
         {selectedThread && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div
-              className={`bg-gray-800 dark:bg-gray-200 p-6 rounded-xl w-full max-w-2xl max-h-[80vh] ${styles.customScrollbar} shadow-2xl`}
+              className={`bg-gray-800 dark:bg-gray-200 p-6 rounded-xl w-full max-w-2xl max-h-[80vh] ${styles.customScrollbar} shadow-2xl relative`}
             >
+              {/* ปุ่มกากบาท */}
+              <button
+                onClick={closeThreadModal}
+                className="absolute top-2 right-2 text-gray-400 hover:text-gray-200 dark:text-gray-600 dark:hover:text-gray-800 text-2xl font-bold transition-colors duration-200"
+              >
+                ×
+              </button>
+
               <h2 className="text-2xl font-bold mb-4 text-gray-100 dark:text-gray-900">{selectedThread.title}</h2>
               <p className="text-gray-300 dark:text-gray-700 mb-6 leading-relaxed">{selectedThread.content}</p>
               <div className="text-sm text-gray-400 dark:text-gray-600 mb-6">
@@ -345,7 +372,7 @@ export default function Forum() {
               </div>
 
               <button
-                onClick={() => setSelectedThread(null)}
+                onClick={closeThreadModal}
                 className="mt-6 px-6 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 dark:bg-gray-300 dark:hover:bg-gray-400 dark:text-black shadow-md transition-colors duration-300"
               >
                 ปิด
