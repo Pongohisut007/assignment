@@ -1,6 +1,11 @@
 // src/gateway/gateway.ts
 import { OnModuleInit } from '@nestjs/common';
-import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  MessageBody,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { ChatHistoryService } from '../typeORM/chatHistory/chat-history.service';
 import { UsersService } from '../typeORM/users/users.service';
@@ -25,7 +30,9 @@ export class Gateway implements OnModuleInit {
   }
 
   @SubscribeMessage('newPrompt')
-  async handleNewPrompt(@MessageBody() { userId, prompt }: { userId: number; prompt: string }): Promise<string> {
+  async handleNewPrompt(
+    @MessageBody() { userId, prompt }: { userId: number; prompt: string },
+  ): Promise<string> {
     const room = `user_${userId}`;
     console.log(`Received Prompt from User ${userId}: ${prompt}`);
 
@@ -35,9 +42,16 @@ export class Gateway implements OnModuleInit {
       return '';
     }
 
-    const aiResponse = await this.chatHistoryService.getChatGPTresponse(userId, prompt);
-    const chatEntry = await this.chatHistoryService.create(user, prompt, aiResponse);
-    
+    const aiResponse =
+      await this.chatHistoryService.getChatGPTresponseAndSaveWithUserHistory(
+        userId,
+        prompt,
+      );
+    const chatEntry = await this.chatHistoryService.create(
+      user,
+      prompt,
+      aiResponse,
+    );
 
     const logData = {
       prompt,
@@ -58,7 +72,7 @@ export class Gateway implements OnModuleInit {
     this.server.socketsJoin(room);
     console.log(`User ${userId} joined room: ${room}`);
 
-    this.chatHistoryService.findByUser(userId).then(history => {
+    this.chatHistoryService.findByUser(userId).then((history) => {
       this.server.to(room).emit('chatHistory', history);
     });
   }

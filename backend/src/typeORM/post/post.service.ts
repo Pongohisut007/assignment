@@ -15,28 +15,44 @@ export class PostService {
 
     private readonly chatHistoryService: ChatHistoryService,
   ) {}
- 
-  async create(user: any, createPostDto: any) {
+
+  async create(user: any, postData: any) {
     // 1. สร้างโพสต์ใหม่ในฐานข้อมูล
     const newPost = this.postRepository.create({
-      content: createPostDto.information,
-      owner: user,
+      subject: postData.subject,
+      content: postData.content,
+      owner: { user_id: postData.owner },
+      ...(postData.tagIds && {
+        tags: postData.tagIds.map((tag_id) => {
+          return { tag_id: tag_id };
+        }),
+      }),
     });
     await this.postRepository.save(newPost);
 
     // 2. ใช้ GPT AI เพื่อสร้างคอมเมนต์แรก
     const aiResponse = await this.chatHistoryService.getChatGPTresponse(
-      user.user_id,
-      createPostDto.information,
+      `SUBJECT:${postData.subject}\n` + `CONTENT:` + postData.content,
     );
 
-    // 3. บันทึกคอมเมนต์ AI ลงในฐานข้อมูล
-    // const aiComment = this.commentRepository.create({
-    //   // post: { id: newPost.id },
-    //   owner: { id: 1 },
-    //   description: aiResponse,
-    // });
-    // await this.commentRepository.save(aiComment);
-    return newPost;
+    //3. บันทึกคอมเมนต์ AI ลงในฐานข้อมูล
+    const aiComment = await this.commentRepository.create({
+      post: { post_id: 1 },
+      owner: { user_id: 3 },
+      comment: aiResponse,
+    });
+    await this.commentRepository.save(aiComment);
+    return { newPost, aiResponse };
+  }
+
+  async getAllPost() {
+    return await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.comments', 'comment')
+      .leftJoinAndSelect('comment.sub_comments', 'subComment')
+      .leftJoinAndSelect('subComment.owner', 'subCommentAuthor')
+      .leftJoinAndSelect('comment.owner', 'commentAuthor')
+      .leftJoinAndSelect('post.owner', 'postAuthor')
+      .getMany();
   }
 }

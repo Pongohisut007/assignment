@@ -24,10 +24,27 @@ export class ChatHistoryService {
     });
   }
 
-  async getChatGPTresponse(userId: number, prompt: string): Promise<string> {
+  async getChatGPTresponse(content: any): Promise<string> {
+    try {
+      const completion = await this.openai.chat.completions.create({
+        messages: [{ role: 'assistant', content: content }],
+        model: 'gpt-4o-mini',
+        max_tokens: 1000,
+      });
+      return completion.choices[0].message.content ?? 'No response from AI';
+    } catch (error) {
+      console.error('Error calling OpenAI:', error);
+      throw new Error('Failed to get ChatGPT response');
+    }
+  }
+
+  async getChatGPTresponseAndSaveWithUserHistory(
+    userId: any,
+    prompt: string,
+  ): Promise<string> {
     const history = await this.findByUser(userId);
     const messages = history
-      .map(entry => [
+      .map((entry) => [
         { role: 'user', content: entry.prompt },
         { role: 'assistant', content: entry.response },
       ])
@@ -52,7 +69,10 @@ export class ChatHistoryService {
     const user = await this.usersService.findOne(userId);
     if (!user) throw new Error('User not found');
 
-    const response = await this.getChatGPTresponse(userId, prompt);
+    const response = await this.getChatGPTresponseAndSaveWithUserHistory(
+      userId,
+      prompt,
+    );
     const chatEntry = await this.create(user, prompt, response);
 
     const logData = {
@@ -66,7 +86,11 @@ export class ChatHistoryService {
     return response;
   }
 
-  async create(user: Users, prompt: string, response: string): Promise<ChatHistory> {
+  async create(
+    user: Users,
+    prompt: string,
+    response: string,
+  ): Promise<ChatHistory> {
     const chatEntry = this.chatHistoryRepository.create({
       user,
       prompt,

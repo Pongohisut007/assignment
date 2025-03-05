@@ -9,6 +9,7 @@ import {
 import { ChatHistory } from '../chatHistory/chat-history.entity';
 import { Post } from '../post/entities/post.entity';
 import { Comment } from '../comment/entities/comment.entity';
+import { SubComment } from '../sub-comment/entities/sub-comment.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -43,6 +44,9 @@ export class Users {
 
   @OneToMany(() => Comment, (comment) => comment)
   comments: Comment[];
+
+  @OneToMany(() => SubComment, (subcomment) => subcomment.owner)
+  sub_comments: SubComment[];
 
   @OneToMany(() => Post, (post) => post.owner)
   posts: Post[];
