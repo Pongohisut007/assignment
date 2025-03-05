@@ -15,6 +15,8 @@ import 'dotenv/config';
 import { Post } from './post/entities/post.entity';
 import { Comment } from './comment/entities/comment.entity';
 import { Tag } from './tag/entities/tag.entity';
+import { PostController } from './post/post.controller';
+import { PostService } from './post/post.service';
 
 @Module({
   imports: [
@@ -36,8 +38,8 @@ import { Tag } from './tag/entities/tag.entity';
     }),
     forwardRef(() => GatewayModule), // ใช้ forwardRef
   ],
-  controllers: [UsersController, AuthController, ChatHistoryController],
-  providers: [UsersService, AuthService, JwtStrategy, ChatHistoryService],
-  exports: [TypeOrmModule, UsersService, ChatHistoryService],
+  controllers: [UsersController, AuthController, ChatHistoryController,PostController],
+  providers: [UsersService, AuthService, JwtStrategy, ChatHistoryService,PostService],
+  exports: [TypeOrmModule, UsersService, ChatHistoryService,PostService],
 })
 export class TypeormModule {}

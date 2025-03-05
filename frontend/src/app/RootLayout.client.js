@@ -14,6 +14,8 @@ export function AuthProvider({ children }) {
   const pathname = usePathname();
   const isLoginPage = pathname === "/login";
   const isRegisterPage = pathname === "/register";
+  const isAssistantPage = pathname === "/Assistant";
+  
 
   const login = (userData) => {
     setUser(userData);
@@ -34,9 +36,9 @@ export function AuthProvider({ children }) {
         exit={{ opacity: 0, y: -50 }}
         transition={{ duration: 0.5 }}
       >
-        {(!isLoginPage && !isRegisterPage) && <Navbar />}
+        {(!isLoginPage && !isRegisterPage ) && <Navbar />}
         {children}
-        {(!isLoginPage && !isRegisterPage) && <Footer />}
+        {(!isLoginPage && !isRegisterPage && !isAssistantPage) && <Footer />}
       </motion.div>
     </AuthContext.Provider>
   );

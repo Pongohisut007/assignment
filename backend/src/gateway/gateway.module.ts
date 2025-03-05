@@ -5,6 +5,6 @@ import { TypeormModule } from '../typeORM/typeorm.module';
 @Module({
   imports: [forwardRef(() => TypeormModule)], // ใช้ forwardRef
   providers: [Gateway],
-  exports: [],
+  exports: [Gateway],
 })
 export class GatewayModule {}
