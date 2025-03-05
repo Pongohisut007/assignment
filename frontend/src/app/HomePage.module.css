@@ -1,65 +1,57 @@
 .star {
     position: absolute;
-    width: 3px; /* ขนาดดาว */
+    width: 3px;
     height: 3px;
-    border-radius: 50%; /* ทำให้เป็นวงกลม */
-    animation: twinkle 5s linear infinite; /* Animation หลัก */
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0); /* ค่าเริ่มต้นสำหรับ Dark Mode */
+    animation: twinkle 5s linear infinite; /* Animation สำหรับ Dark Mode */
   }
   
-  /* Dark Mode: ดาวสีขาว */
-  .star {
-    background: rgba(255, 255, 255, 0);
-  }
-  
-  /* Light Mode: ดาวสีดำ */
   :where(.dark) .star {
-    background: rgba(0, 0, 0, 0); /* สีดำใน Light Mode */
+    background: rgba(0, 0, 0, 0); /* ค่าเริ่มต้นสำหรับ Light Mode */
+    animation: twinkleLight 5s linear infinite; /* Animation สำหรับ Light Mode */
   }
   
-  /* Animation สำหรับการกระพริบใน Dark Mode */
+  /* Animation สำหรับ Dark Mode (สีขาว) */
   @keyframes twinkle {
     0% {
       transform: scale(1, 1);
-      background: rgba(255, 255, 255, 0); /* เริ่มโปร่งใส */
+      background: rgba(255, 255, 255, 0);
       animation-timing-function: linear;
     }
     40% {
       transform: scale(0.8, 0.8);
-      background: rgba(255, 255, 255, 1); /* สีขาวเต็มที่ */
+      background: rgba(255, 255, 255, 1);
       animation-timing-function: ease-out;
     }
     80% {
-      background: rgba(255, 255, 255, 0); /* กลับไปโปร่งใส */
       transform: scale(1, 1);
+      background: rgba(255, 255, 255, 0);
     }
     100% {
-      background: rgba(255, 255, 255, 0);
       transform: scale(1, 1);
+      background: rgba(255, 255, 255, 0);
     }
   }
   
-  /* Animation สำหรับการกระพริบใน Light Mode */
-  :where(.dark) .star {
-    animation: twinkleLight 5s linear infinite;
-  }
-  
+  /* Animation สำหรับ Light Mode (สีดำ) */
   @keyframes twinkleLight {
     0% {
       transform: scale(1, 1);
-      background: rgba(0, 0, 0, 0); /* เริ่มโปร่งใส (สีดำ) */
+      background: rgba(0, 0, 0, 0);
       animation-timing-function: linear;
     }
     40% {
       transform: scale(0.8, 0.8);
-      background: rgba(0, 0, 0, 0.9); /* สีดำเข้มเพื่อให้มองเห็น */
+      background: rgba(0, 0, 0, 0.9);
       animation-timing-function: ease-out;
     }
     80% {
-      background: rgba(0, 0, 0, 0); /* กลับไปโปร่งใส */
       transform: scale(1, 1);
+      background: rgba(0, 0, 0, 0);
     }
     100% {
-      background: rgba(0, 0, 0, 0);
       transform: scale(1, 1);
+      background: rgba(0, 0, 0, 0);
     }
   }

@@ -15,7 +15,7 @@ import { Chat } from '../chat/chat.entity';
 export enum UserRole {
   ADMIN = 'admin',
   USER = 'user',
-  GPT = 'gpt',
+  GPT = 'gpt'
 }
 
 @Entity()

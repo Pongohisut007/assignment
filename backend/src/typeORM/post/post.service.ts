@@ -18,7 +18,7 @@ export class PostService {
 
   async create(user: any, postData: any) {
     // 1. สร้างโพสต์ใหม่ในฐานข้อมูล
-    const newPost: any = this.postRepository.create({
+    const newPost:any = this.postRepository.create({
       subject: postData.subject,
       content: postData.content,
       owner: { user_id: postData.owner },

@@ -1,88 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import styles from "./Forum.module.css";
 
-// Mock Data สำหรับกระทู้
-const mockThreads = [
-  {
-    id: 1,
-    title: "แนะนำร้านกาแฟในกรุงเทพ",
-    content: "สวัสดีครับ ผมอยากได้คำแนะนำร้านกาแฟน่านั่งในกรุงเทพหน่อยครับ ชอบบรรยากาศเงียบ ๆ และกาแฟรสชาติดี มีใครแนะนำได้บ้างครับ?",
-    tags: ["กาแฟ", "กรุงเทพ", "ร้านนั่ง"],
-    timestamp: "2025-03-04T10:00:00Z",
-  },
-  {
-    id: 2,
-    title: "วิธีดูแลต้นไม้ในร่ม",
-    content: "ผมเพิ่งซื้อต้นไม้ในร่มมาเลี้ยงที่บ้าน แต่ไม่แน่ใจว่าต้องรดน้ำบ่อยแค่ไหน และดูแลยังไงให้ต้นไม้ไม่ตาย ใครมีเคล็ดลับบ้างครับ?",
-    tags: ["ต้นไม้", "ในร่ม", "การดูแล"],
-    timestamp: "2025-03-04T12:30:00Z",
-  },
-  {
-    id: 3,
-    title: "รีวิวหนังใหม่ Netflix",
-    content: "เมื่อคืนดูหนังใหม่ใน Netflix เรื่อง 'The Night Agent' มา สนุกมาก! เนื้อเรื่องลุ้นระทึกตลอดเวลา เพื่อน ๆ ดูเรื่องนี้กันหรือยัง?",
-    tags: ["หนัง", "Netflix", "รีวิว"],
-    timestamp: "2025-03-04T15:45:00Z",
-  },
-];
-
-// Mock Data สำหรับคอมเมนต์ (เพิ่ม replies)
-const mockComments = {
-  1: [
-    { 
-      id: 1,
-      threadId: 1, 
-      text: "แนะนำร้าน Casa Lapin ค่ะ บรรยากาศดีมาก", 
-      sender: "Alice", 
-      timestamp: "2025-03-04T10:05:00Z",
-      replies: [
-        { id: 4, threadId: 1, text: "เห็นด้วยเลย ร้านนี้เงียบดีจริง", sender: "Eve", timestamp: "2025-03-04T10:07:00Z" }
-      ]
-    },
-    { 
-      id: 2,
-      threadId: 1, 
-      text: "ผมชอบ Roots ตรงสยามครับ กาแฟเข้มดี", 
-      sender: "Bob", 
-      timestamp: "2025-03-04T10:10:00Z",
-      replies: []
-    },
-  ],
-  2: [
-    { 
-      id: 3,
-      threadId: 2, 
-      text: "รดน้ำสัปดาห์ละครั้งก็พอครับ แต่ต้องดูแสงด้วย", 
-      sender: "Charlie", 
-      timestamp: "2025-03-04T12:35:00Z",
-      replies: []
-    },
-  ],
-  3: [
-    { 
-      id: 5,
-      threadId: 3, 
-      text: "ยังไม่ได้ดูเลย เดี๋ยวต้องไปลอง!", 
-      sender: "Dave", 
-      timestamp: "2025-03-04T15:50:00Z",
-      replies: []
-    },
-    { 
-      id: 6,
-      threadId: 3, 
-      text: "สนุกจริงครับ ตอนจบพีคมาก", 
-      sender: "Eve", 
-      timestamp: "2025-03-04T15:55:00Z",
-      replies: []
-    },
-  ],
-};
-
 export default function Forum() {
-  const [threads, setThreads] = useState(mockThreads);
+  const [threads, setThreads] = useState([]);
   const [newThread, setNewThread] = useState({ title: "", content: "", tags: "" });
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedThread, setSelectedThread] = useState(null);
@@ -91,67 +14,58 @@ export default function Forum() {
   const [replyInputs, setReplyInputs] = useState({});
   const { theme } = useTheme();
 
-  const handleCreateThread = (e) => {
+  // URL ฐานของ API (ปรับตามที่อยู่ backend ของคุณ)
+  const API_BASE_URL = "http://localhost:3001";
+
+  // ดึงกระทู้ทั้งหมดเมื่อโหลดหน้า
+  useEffect(() => {
+    fetchThreads();
+  }, []);
+
+  const fetchThreads = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/post`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await response.json();
+      setThreads(data);
+    } catch (error) {
+      console.error("Error fetching threads:", error);
+    }
+  };
+
+  // สร้างกระทู้ใหม่
+  const handleCreateThread = async (e) => {
     e.preventDefault();
     if (!newThread.title || !newThread.content) return;
 
     const threadData = {
-      id: threads.length + 1,
-      title: newThread.title,
+      owner: 1, // แทนด้วย ownerId จากระบบล็อกอิน (เช่นจาก context หรือ token)
+      subject: newThread.title,
       content: newThread.content,
-      tags: newThread.tags.split(",").map((tag) => tag.trim()),
-      timestamp: new Date().toISOString(),
+      tagIds: newThread.tags ? newThread.tags.split(",").map((tag) => parseInt(tag.trim())) : [],
     };
 
-    setThreads((prev) => [...prev, threadData]);
-    setNewThread({ title: "", content: "", tags: "" });
-    setIsCreateModalOpen(false);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/post`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(threadData),
+      });
+      const result = await response.json();
+      setThreads((prev) => [...prev, result.newPost]); // เพิ่มโพสต์ใหม่ใน UI
+      setNewThread({ title: "", content: "", tags: "" });
+      setIsCreateModalOpen(false);
+    } catch (error) {
+      console.error("Error creating thread:", error);
+    }
   };
 
-  const handleCommentSubmit = (e) => {
-    e.preventDefault();
-    if (!newComment || !selectedThread) return;
-
-    const commentData = {
-      id: comments.length + Date.now(),
-      threadId: selectedThread.id,
-      text: newComment,
-      sender: "You",
-      timestamp: new Date().toISOString(),
-      replies: [],
-    };
-
-    setComments((prev) => [...prev, commentData]);
-    setNewComment("");
-  };
-
-  const handleReplySubmit = (e, commentId) => {
-    e.preventDefault();
-    const replyText = replyInputs[commentId];
-    if (!replyText) return;
-
-    const replyData = {
-      id: comments.length + Date.now() + Math.random(),
-      threadId: selectedThread.id,
-      text: replyText,
-      sender: "You",
-      timestamp: new Date().toISOString(),
-    };
-
-    setComments((prev) =>
-      prev.map((comment) =>
-        comment.id === commentId
-          ? { ...comment, replies: [...comment.replies, replyData] }
-          : comment
-      )
-    );
-    setReplyInputs((prev) => ({ ...prev, [commentId]: "" }));
-  };
-
+  // ดึงคอมเมนต์เมื่อเลือกกระทู้
   const openThreadModal = (thread) => {
     setSelectedThread(thread);
-    const threadComments = mockComments[thread.id] || [];
-    setComments(threadComments);
+    setComments(thread.comments || []); // คอมเมนต์มาจากข้อมูลโพสต์ที่ได้จาก API
     setReplyInputs({});
   };
 
@@ -160,6 +74,64 @@ export default function Forum() {
     setComments([]);
     setNewComment("");
     setReplyInputs({});
+  };
+
+  // สร้างคอมเมนต์ใหม่
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    if (!newComment || !selectedThread) return;
+
+    const commentData = {
+      owner: 1, // แทนด้วย ownerId จากระบบล็อกอิน
+      post: selectedThread.post_id,
+      comment: newComment,
+    };
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/comment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(commentData),
+      });
+      const newCommentData = await response.json();
+      setComments((prev) => [...prev, { ...newCommentData, replies: [] }]);
+      setNewComment("");
+    } catch (error) {
+      console.error("Error creating comment:", error);
+    }
+  };
+
+  // สร้างซับคอมเมนต์
+  const handleReplySubmit = async (e, commentId) => {
+    e.preventDefault();
+    const replyText = replyInputs[commentId];
+    if (!replyText) return;
+
+    const subCommentData = {
+      owner: 1, // แทนด้วย ownerId จากระบบล็อกอิน
+      comment_id: commentId,
+      sub_comment: replyText,
+    };
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/sub-comment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(subCommentData),
+      });
+      const newSubComment = await response.json();
+
+      setComments((prev) =>
+        prev.map((comment) =>
+          comment.comment_id === commentId
+            ? { ...comment, sub_comments: [...(comment.sub_comments || []), newSubComment] }
+            : comment
+        )
+      );
+      setReplyInputs((prev) => ({ ...prev, [commentId]: "" }));
+    } catch (error) {
+      console.error("Error creating sub-comment:", error);
+    }
   };
 
   return (
@@ -205,7 +177,7 @@ export default function Forum() {
                 <div>
                   <input
                     type="text"
-                    placeholder="แท็ก (คั่นด้วย ,)"
+                    placeholder="แท็ก (คั่นด้วย , เช่น 1,2,3)"
                     value={newThread.tags}
                     onChange={(e) => setNewThread({ ...newThread, tags: e.target.value })}
                     className="w-full p-3 rounded-lg text-gray-200 dark:text-gray-900 bg-gray-900 dark:bg-gray-100 border border-gray-600 dark:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 dark:placeholder-gray-400 shadow-sm transition-all duration-200"
@@ -238,19 +210,19 @@ export default function Forum() {
           ) : (
             threads.map((thread) => (
               <div
-                key={thread.id}
+                key={thread.post_id}
                 className="bg-gray-800 dark:bg-gray-200 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
                 onClick={() => openThreadModal(thread)}
               >
                 <h2 className="text-xl font-semibold text-blue-400 dark:text-blue-600 hover:underline">
-                  {thread.title}
+                  {thread.subject}
                 </h2>
                 <p className="mt-2 text-gray-300 dark:text-gray-700">
                   {thread.content.substring(0, 150)}...
                 </p>
                 <div className="mt-2 text-sm text-gray-400 dark:text-gray-600">
-                  <span>โพสต์เมื่อ: {new Date(thread.timestamp).toLocaleString()}</span> |{" "}
-                  <span>แท็ก: {thread.tags.join(", ")}</span>
+                  <span>โพสต์เมื่อ: {new Date(thread.created_at || thread.timestamp).toLocaleString()}</span> |{" "}
+                  <span>แท็ก: {(thread.tags || []).map((tag) => tag.tag_name || tag).join(", ")}</span>
                 </div>
               </div>
             ))
@@ -263,7 +235,6 @@ export default function Forum() {
             <div
               className={`bg-gray-800 dark:bg-gray-200 p-6 rounded-xl w-full max-w-2xl max-h-[80vh] ${styles.customScrollbar} shadow-2xl relative`}
             >
-              {/* ปุ่มกากบาท */}
               <button
                 onClick={closeThreadModal}
                 className="absolute top-2 right-2 text-gray-400 hover:text-gray-200 dark:text-gray-600 dark:hover:text-gray-800 text-2xl font-bold transition-colors duration-200"
@@ -271,11 +242,11 @@ export default function Forum() {
                 ×
               </button>
 
-              <h2 className="text-2xl font-bold mb-4 text-gray-100 dark:text-gray-900">{selectedThread.title}</h2>
+              <h2 className="text-2xl font-bold mb-4 text-gray-100 dark:text-gray-900">{selectedThread.subject}</h2>
               <p className="text-gray-300 dark:text-gray-700 mb-6 leading-relaxed">{selectedThread.content}</p>
               <div className="text-sm text-gray-400 dark:text-gray-600 mb-6">
-                <span>โพสต์เมื่อ: {new Date(selectedThread.timestamp).toLocaleString()}</span> |{" "}
-                <span>แท็ก: {selectedThread.tags.join(", ")}</span>
+                <span>โพสต์เมื่อ: {new Date(selectedThread.created_at || selectedThread.timestamp).toLocaleString()}</span> |{" "}
+                <span>แท็ก: {(selectedThread.tags || []).map((tag) => tag.tag_name || tag).join(", ")}</span>
               </div>
 
               {/* ช่องคอมเมนต์ */}
@@ -285,19 +256,19 @@ export default function Forum() {
                   <p className="text-gray-400 dark:text-gray-600 italic">ยังไม่มีคอมเมนต์</p>
                 ) : (
                   comments.map((comment) => (
-                    <div key={comment.id} className="relative space-y-2">
+                    <div key={comment.comment_id} className="relative space-y-2">
                       <div className="bg-gray-700 dark:bg-gray-300 p-4 rounded-lg shadow-md flex items-start space-x-4 hover:bg-gray-600 dark:hover:bg-gray-200 transition-colors duration-200">
                         <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                          {comment.sender.charAt(0).toUpperCase()}
+                          {comment.owner?.username?.charAt(0).toUpperCase() || "U"}
                         </div>
                         <div className="flex-1">
-                          <p className="text-gray-100 dark:text-gray-900 font-semibold">{comment.sender}</p>
-                          <p className="text-gray-200 dark:text-gray-800 mt-1">{comment.text}</p>
+                          <p className="text-gray-100 dark:text-gray-900 font-semibold">{comment.owner?.username || "Unknown"}</p>
+                          <p className="text-gray-200 dark:text-gray-800 mt-1">{comment.comment}</p>
                           <span className="text-xs text-gray-400 dark:text-gray-600 mt-1 block">
-                            {new Date(comment.timestamp).toLocaleString()}
+                            {new Date(comment.created_at || comment.timestamp).toLocaleString()}
                           </span>
                           <button
-                            onClick={() => setReplyInputs((prev) => ({ ...prev, [comment.id]: prev[comment.id] || "" }))}
+                            onClick={() => setReplyInputs((prev) => ({ ...prev, [comment.comment_id]: prev[comment.comment_id] || "" }))}
                             className="mt-2 text-sm text-blue-400 hover:text-blue-500 dark:text-blue-600 dark:hover:text-blue-700 underline"
                           >
                             Reply
@@ -305,22 +276,22 @@ export default function Forum() {
                         </div>
                       </div>
 
-                      {/* Replies กับเส้นเชื่อมโยง */}
-                      {comment.replies && comment.replies.length > 0 && (
+                      {/* Sub-comments */}
+                      {comment.sub_comments && comment.sub_comments.length > 0 && (
                         <div className="ml-12 relative space-y-2">
-                          {comment.replies.map((reply, index) => (
+                          {comment.sub_comments.map((subComment) => (
                             <div
-                              key={reply.id}
+                              key={subComment.sub_comment_id}
                               className={`bg-gray-600 dark:bg-gray-400 p-3 rounded-lg shadow-sm flex items-start space-x-3 ${styles.replyConnector}`}
                             >
                               <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold">
-                                {reply.sender.charAt(0).toUpperCase()}
+                                {subComment.owner?.username?.charAt(0).toUpperCase() || "U"}
                               </div>
                               <div className="flex-1">
-                                <p className="text-gray-100 dark:text-gray-900 font-semibold">{reply.sender}</p>
-                                <p className="text-gray-200 dark:text-gray-800 mt-1">{reply.text}</p>
+                                <p className="text-gray-100 dark:text-gray-900 font-semibold">{subComment.owner?.username || "Unknown"}</p>
+                                <p className="text-gray-200 dark:text-gray-800 mt-1">{subComment.sub_comment}</p>
                                 <span className="text-xs text-gray-400 dark:text-gray-600 mt-1 block">
-                                  {new Date(reply.timestamp).toLocaleString()}
+                                  {new Date(subComment.created_at || subComment.timestamp).toLocaleString()}
                                 </span>
                               </div>
                             </div>
@@ -329,16 +300,16 @@ export default function Forum() {
                       )}
 
                       {/* ฟอร์มตอบกลับ */}
-                      {replyInputs[comment.id] !== undefined && (
+                      {replyInputs[comment.comment_id] !== undefined && (
                         <form
-                          onSubmit={(e) => handleReplySubmit(e, comment.id)}
+                          onSubmit={(e) => handleReplySubmit(e, comment.comment_id)}
                           className="ml-12 mt-2 flex flex-col space-y-2"
                         >
                           <textarea
-                            placeholder={`Reply to ${comment.sender}...`}
-                            value={replyInputs[comment.id]}
+                            placeholder={`Reply to ${comment.owner?.username || "Unknown"}...`}
+                            value={replyInputs[comment.comment_id]}
                             onChange={(e) =>
-                              setReplyInputs((prev) => ({ ...prev, [comment.id]: e.target.value }))
+                              setReplyInputs((prev) => ({ ...prev, [comment.comment_id]: e.target.value }))
                             }
                             className="w-full p-2 rounded-lg text-black dark:bg-gray-100 border border-gray-600 dark:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800 dark:bg-white text-gray-200 dark:text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 shadow-inner resize-none h-20"
                           />
