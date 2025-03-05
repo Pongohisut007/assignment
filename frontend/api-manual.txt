@@ -33,6 +33,6 @@ CHAT
 postChat
 {
 	"owner"   : <user_id>,
-	"room_id" : <room_id>,
+	"room_name" : <room_name>,
 	"message" : <message_str>,
 }

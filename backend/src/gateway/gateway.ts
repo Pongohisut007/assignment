@@ -7,18 +7,14 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-// import { ChatHistoryService } from '../typeORM/chatHistory/chat-history.service';
-// import { UsersService } from '../typeORM/users/users.service';
 import { ChatService } from 'src/typeORM/chat/chat.service';
 
-@WebSocketGateway(9003, { cors: { origin: 'http://localhost:3000' } })
+@WebSocketGateway(9002, { cors: { origin: 'http://localhost:3000' } })
 export class Gateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
 
   constructor(
-    // private readonly chatHistoryService: ChatHistoryService,
-    // private readonly usersService: UsersService,
     private readonly chatService: ChatService,
   ) {}
 
@@ -30,43 +26,6 @@ export class Gateway implements OnModuleInit {
       });
     });
   }
-
-  // @SubscribeMessage('newPrompt')
-  // async handleNewPrompt(
-  //   @MessageBody() { userId, prompt }: { userId: number; prompt: string },
-  // ): Promise<string> {
-  //   const room = `user_${userId}`;
-  //   console.log(`Received Prompt from User ${userId}: ${prompt}`);
-
-  //   const user = await this.usersService.findOne(userId);
-  //   if (!user) {
-  //     this.server.to(room).emit('error', 'User not found');
-  //     return '';
-  //   }
-
-  //   const aiResponse =
-  //     await this.chatHistoryService.getChatGPTresponseAndSaveWithUserHistory(
-  //       userId,
-  //       prompt,
-  //     );
-  //   const chatEntry = await this.chatHistoryService.create(
-  //     user,
-  //     prompt,
-  //     aiResponse,
-  //   );
-
-  //   const logData = {
-  //     prompt,
-  //     response: aiResponse,
-  //     timestamp: chatEntry.timestamp,
-  //   };
-
-  //   this.server.to(room).emit('onLog', logData);
-  //   const history = await this.chatHistoryService.findByUser(userId);
-  //   this.server.to(room).emit('chatHistory', history);
-
-  //   return aiResponse;
-  // }
 
   @SubscribeMessage('newMessage')
   async handleNewPrompt(
@@ -91,6 +50,11 @@ export class Gateway implements OnModuleInit {
           aiResponse = await this.chatService.getChatGPTresponse(
             `PREPROMPT:${prePrompt}MESSAGE:${data.message}`,
           );
+          await this.chatService.create({
+            owner:data.owner,
+            room_id: 1,
+            message:data.message
+          })
           newMessage = await this.chatService.create({
             owner: 4,
             room_id: 1,
@@ -102,13 +66,27 @@ export class Gateway implements OnModuleInit {
           aiResponse = await this.chatService.getChatGPTresponse(
             `PREPROMPT:${prePrompt}MESSAGE:${data.message}`,
           );
+          await this.chatService.create({
+            owner:data.owner,
+            room_id: 1,
+            message:data.message
+          })
           newMessage = await this.chatService.create({
             owner: 5,
             room_id: 1,
-            message: aiResponse,
+            message: aiResponse, 
           });
         }
-        this.server.emit('newMessageResponse', { aiResponse });
+        this.server.emit('newMessageResponse', {aiResponse, ...newMessage});
+      }
+      else {
+        // save and send new msg
+        const newMessage = await this.chatService.create({
+          owner:data.owner,
+          room_id:1,
+          message:data.message
+        });
+        this.server.emit('newMessageResponse', { ...newMessage });
       }
     } else if (data.room_name === 'technology') {
       if (
@@ -116,11 +94,17 @@ export class Gateway implements OnModuleInit {
         data.message.includes('@จารย์ปัญ')
       ) {
         if (data.message.includes('@เซียนโค้ด')) {
+
           prePrompt =
             'PREPROMPT:ให้ตอบฉันด้วยสไตล์ เซียนโค้ด ให้ตอบแบบ nerdๆ ตอบแบบ technical นิดหน่อยๆ มึนๆกวนๆ';
           aiResponse = await this.chatService.getChatGPTresponse(
             `PREPROMPT:${prePrompt}MESSAGE:${data.message}`,
           );
+          await this.chatService.create({
+            owner:data.owner,
+            room_id: 2,
+            message:data.message
+          })
           newMessage = await this.chatService.create({
             owner: 6,
             room_id: 2,
@@ -132,53 +116,31 @@ export class Gateway implements OnModuleInit {
           aiResponse = await this.chatService.getChatGPTresponse(
             `PREPROMPT:${prePrompt}MESSAGE:${data.message}`,
           );
+          await this.chatService.create({
+            owner:data.owner,
+            room_id: 2,
+            message:data.message
+          })
           newMessage = await this.chatService.create({
             owner: 7,
             room_id: 2,
             message: aiResponse,
           });
         }
-        this.server.emit('newMessageResponse', { newMessage });
+        this.server.emit('newMessageResponse', {aiResponse, ...newMessage});
       }
-    } else {
-      // save and send new msg
-      const newMessage = await this.chatService.create(data);
-      this.server.emit('newMessageResponse', { ...newMessage });
-    }
+      else {
+        // save and send new msg
+        const newMessage = await this.chatService.create({
+          owner:data.owner,
+          room_id:2,
+          message:data.message
+        });
+        this.server.emit('newMessageResponse', { ...newMessage });
+      }
+    } 
     
-    // this.server.emit('newMessageResponse', {
-    //   user_id,
-    //   response: `Received: ${prompt}, userId = ${data.prompt}`,
-    // });
-
-    // ตรวจจับ @mention
-
-    // const chatEntry = await this.chatHistoryService.create(
-    //   user,
-    //   prompt,
-    //   aiResponse,
-    // );
-
-    // this.server.to(room).emit('onLog', {
-    //   prompt,
-    //   response: aiResponse,
-    //   timestamp: chatEntry.timestamp,
-    // });
-    // this.server
-    //   .to(room)
-    //   .emit('chatHistory', await this.chatHistoryService.findByUser(user_id));
-
-    // return aiResponse;
   }
 
-  // @SubscribeMessage('joinRoom')
-  // handleJoinRoom(@MessageBody() userId: number) {
-  //   const room = `user_${userId}`;
-  //   this.server.socketsJoin(room);
-  //   console.log(`User ${userId} joined room: ${room}`);
-
-  //   this.chatHistoryService.findByUser(userId).then((history) => {
-  //     this.server.to(room).emit('chatHistory', history);
-  //   });
-  // }
+  
 }

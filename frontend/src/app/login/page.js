@@ -68,14 +68,16 @@ export default function LoginPage() {
       if (!userResponse.ok) {
         throw new Error(userData.message || 'ไม่สามารถดึงข้อมูลผู้ใช้ได้');
       }
-
-      document.cookie = `user=${JSON.stringify({ email: userData.email, role: userData.role })}; path=/; max-age=3600`;
+      
+      document.cookie = `user=${JSON.stringify({ email: userData.email, role: userData.role, user_id: userData.user_id })}; path=/; max-age=3600`;
       document.cookie = `token=${token}; path=/; max-age=3600; httpOnly`;
       document.cookie = `isLoggedIn=true; path=/; max-age=3600`;
 
       login({
         email: userData.email || emailOrUsername,
         role: userData.role,
+        user_id:userData.user_id,
+        username:userData.username
       });
 
       setIsLoading(false);
@@ -182,4 +184,4 @@ export default function LoginPage() {
       </AnimatePresence>
     </div>
   );
-}
+} 

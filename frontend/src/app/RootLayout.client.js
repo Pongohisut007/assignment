@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import Navbar from '@/app/components/nav';
 import Footer from '@/app/components/footer';
 import { usePathname } from 'next/navigation';
@@ -14,9 +14,22 @@ export function AuthProvider({ children }) {
   const pathname = usePathname();
   const isLoginPage = pathname === "/login";
   const isRegisterPage = pathname === "/register";
-  const isAssistantPage = pathname === "/Assistant";
+  const isAssistantPage = pathname === "/chatRoom";
   const isForum = pathname === "/forum"
   
+  useEffect(() => {
+    const getCookie = (name) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+      return null;
+    };
+
+    const userCookie = getCookie("user");
+    if (userCookie) {
+      setUser(JSON.parse(userCookie));
+    }
+  }, []);
 
   const login = (userData) => {
     setUser(userData);

@@ -9,9 +9,8 @@ import { useTheme } from "next-themes";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
-  { name: "Assistant", href: "/Assistant", current: false },
+  { name: "ChatRoom", href: "/chatRoom", current: false },
   { name: "Forum", href: "/forum", current: false },
-  { name: "Projects", href: "/", current: false },
 ];
 
 function classNames(...classes) {
@@ -49,7 +48,7 @@ export default function Navbar() {
       } else {
         setUsernameInitial("");
       }
-    };
+    }; 
 
     checkAuth();
     setHydrated(true);
@@ -98,7 +97,7 @@ export default function Navbar() {
               />
             </Link>
             <div className="text-xl font-bold text-fuchsia-600 dark:text-fuchsia-700">
-              L i t t l e - C h a t
+              N e w G e n F o r u m
             </div>
           </div>
 
@@ -133,10 +132,6 @@ export default function Navbar() {
             {/* Sign In หรือ User Menu */}
             {isAuthenticated ? (
               <>
-                <button className="relative p-1 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black focus:ring-2 focus:ring-white focus:outline-none">
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="size-6" aria-hidden="true" />
-                </button>
                 <Menu as="div" className="relative">
                   <MenuButton className="relative flex items-center justify-center rounded-full bg-gray-800 border-2 border-white text-sm text-white dark:bg-gray-300 dark:border-gray-400 hover:bg-gray-700 dark:text-black focus:ring-2 focus:ring-white w-8 h-8">
                     <span className="sr-only">Open user menu</span>
