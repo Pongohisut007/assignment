@@ -7,3 +7,4 @@ import { ChatController } from './chat.controller';
   providers: [ChatService],
 })
 export class ChatModule {}
+ 

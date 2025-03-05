@@ -16,7 +16,7 @@ get:  getAllPostCommentSubcomment (get ได้เลย) </api/post>
 post: createComment </api/comment>
 {
     "owner": <ownerId>,
-    "post": <postId>,
+    "post_id": <postId>,
     "comment": <commentMessage>"
 }
 
@@ -27,3 +27,12 @@ post: createSubcomment </api/sub-comment>
  
 
 *******************************************
+
+CHAT
+
+postChat
+{
+	"owner"   : <user_id>,
+	"room_name" : <room_name>,
+	"message" : <message_str>,
+}

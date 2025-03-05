@@ -2,7 +2,7 @@
 import { Controller, Post, Body, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { ParseIntPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
-// import { any } from './create-user.dto';
+import { CreateUserDto } from './create-user.dto';
 import { Users, UserRole } from './users.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -11,12 +11,12 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('/register')
-  async register(@Body() dto: any): Promise<Users> {
+  async register(@Body() dto: CreateUserDto): Promise<Users> {
     return this.usersService.createUser(dto);
   }
 
   @Post('/register-admin')
-  async registerAdmin(@Body() dto: any): Promise<Users> {
+  async registerAdmin(@Body() dto: CreateUserDto): Promise<Users> {
     return this.usersService.createUser(dto, UserRole.ADMIN);
   }
 

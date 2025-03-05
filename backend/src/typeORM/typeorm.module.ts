@@ -29,6 +29,8 @@ import { Chat } from './chat/chat.entity';
 import { Room } from './room/room.entity';
 import { TagController } from './tag/tag.controller';
 import { TagService } from './tag/tag.service';
+import { ChatController } from './chat/chat.controller';
+import { ChatService } from './chat/chat.service';
 
 @Module({
   imports: [
@@ -59,6 +61,7 @@ import { TagService } from './tag/tag.service';
       Comment,
       Tag,
       SubComment,
+      Chat,
     ]),
     JwtModule.register({
       secret: 'your-secret-key',
@@ -77,6 +80,7 @@ import { TagService } from './tag/tag.service';
     CommentController,
     SubCommentController,
     TagController,
+    ChatController,
   ],
   providers: [
     UsersService,
@@ -87,6 +91,7 @@ import { TagService } from './tag/tag.service';
     CommentService,
     SubCommentService,
     TagService,
+    ChatService,
   ],
   exports: [
     TypeOrmModule,
@@ -96,6 +101,7 @@ import { TagService } from './tag/tag.service';
     CommentService,
     SubCommentService,
     TagService,
+    ChatService,
   ],
 })
 export class TypeormModule {}

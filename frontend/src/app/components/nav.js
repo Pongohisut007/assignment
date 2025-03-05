@@ -1,27 +1,26 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { useTheme } from 'next-themes';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useTheme } from "next-themes";
 
 const navigation = [
-  { name: 'Home', href: '/', current: true },
-  { name: 'Assistant', href: '/Assistant', current: false },
+  { name: "Home", href: "/", current: true },
+  { name: "ChatRoom", href: "/chatRoom", current: false },
   { name: "Forum", href: "/forum", current: false },
-  { name: 'Projects', href: '/', current: false },
 ];
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
+  if (parts.length === 2) return parts.pop().split(";").shift();
   return null;
 }
 
@@ -29,27 +28,27 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [hydrated, setHydrated] = useState(false);
-  const [usernameInitial, setUsernameInitial] = useState('');
+  const [usernameInitial, setUsernameInitial] = useState("");
   const router = useRouter();
-  const { theme, setTheme } = useTheme(); // เพิ่ม useTheme
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const checkAuth = () => {
-      const isLoggedIn = getCookie('isLoggedIn');
-      const userCookie = getCookie('user');
-      console.log('isLoggedIn:', isLoggedIn, 'userCookie:', userCookie);
+      const isLoggedIn = getCookie("isLoggedIn");
+      const userCookie = getCookie("user");
+      console.log("isLoggedIn:", isLoggedIn, "userCookie:", userCookie);
 
-      const isAuth = isLoggedIn === 'true';
+      const isAuth = isLoggedIn === "true";
       setIsAuthenticated(isAuth);
 
       if (isAuth && userCookie) {
         const userData = JSON.parse(userCookie);
-        const username = userData.email.split('@')[0];
+        const username = userData.email.split("@")[0];
         setUsernameInitial(username.charAt(0).toUpperCase());
       } else {
-        setUsernameInitial('');
+        setUsernameInitial("");
       }
-    };
+    }; 
 
     checkAuth();
     setHydrated(true);
@@ -57,32 +56,32 @@ export default function Navbar() {
     const timeout = setTimeout(checkAuth, 100);
 
     if (router && router.events) {
-      router.events.on('routeChangeComplete', checkAuth);
+      router.events.on("routeChangeComplete", checkAuth);
       return () => {
         clearTimeout(timeout);
-        router.events.off('routeChangeComplete', checkAuth);
+        router.events.off("routeChangeComplete", checkAuth);
       };
     }
   }, [router]);
 
   const handleLogout = () => {
-    document.cookie = 'user=; path=/; max-age=0';
-    document.cookie = 'token=; path=/; max-age=0';
-    document.cookie = 'isLoggedIn=; path=/; max-age=0';
+    document.cookie = "user=; path=/; max-age=0";
+    document.cookie = "token=; path=/; max-age=0";
+    document.cookie = "isLoggedIn=; path=/; max-age=0";
     setIsAuthenticated(false);
-    setUsernameInitial('');
-    router.push('/login');
+    setUsernameInitial("");
+    router.push("/login");
   };
 
   const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   if (!hydrated) return null;
 
   const filteredNavigation = isAuthenticated
     ? navigation
-    : navigation.filter((item) => item.name === 'Home');
+    : navigation.filter((item) => item.name === "Home");
 
   return (
     <nav className="bg-gray-800 dark:bg-gray-200">
@@ -98,7 +97,7 @@ export default function Navbar() {
               />
             </Link>
             <div className="text-xl font-bold text-fuchsia-600 dark:text-fuchsia-700">
-              L i t t l e - C h a t
+              N e w G e n F o r u m
             </div>
           </div>
 
@@ -107,15 +106,17 @@ export default function Navbar() {
             {/* Navigation */}
             <div className="flex space-x-4">
               {filteredNavigation.map((item) => (
-                <Link key={item.name} href={item.href} legacyBehavior>
-                  <a
-                    className={classNames(
-                      item.current ? ' text-white hover:bg-gray-700 dark:bg-gray-300 dark:text-black' : 'text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black',
-                      'rounded-md px-3 py-2 text-sm font-medium'
-                    )}
-                  >
-                    {item.name}
-                  </a>
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={classNames(
+                    item.current
+                      ? "text-white hover:bg-gray-700 dark:bg-gray-300 dark:text-black"
+                      : "text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black",
+                    "rounded-md px-3 py-2 text-sm font-medium"
+                  )}
+                >
+                  {item.name}
                 </Link>
               ))}
             </div>
@@ -125,39 +126,43 @@ export default function Navbar() {
               onClick={toggleTheme}
               className="p-2 rounded-full bg-gray-700 text-white dark:bg-gray-300 dark:text-black hover:bg-gray-500"
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
+              {theme === "dark" ? "☀️" : "🌙"}
             </button>
 
             {/* Sign In หรือ User Menu */}
             {isAuthenticated ? (
               <>
-                <button className="relative p-1 text-gray-400 hover:text-white dark:text-gray-600 dark:hover:text-black focus:ring-2 focus:ring-white focus:outline-none">
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="size-6" aria-hidden="true" />
-                </button>
                 <Menu as="div" className="relative">
                   <MenuButton className="relative flex items-center justify-center rounded-full bg-gray-800 border-2 border-white text-sm text-white dark:bg-gray-300 dark:border-gray-400 hover:bg-gray-700 dark:text-black focus:ring-2 focus:ring-white w-8 h-8">
                     <span className="sr-only">Open user menu</span>
                     <span className="text-lg font-medium">
-                      {usernameInitial || 'U'}
+                      {usernameInitial || "U"}
                     </span>
                   </MenuButton>
                   <MenuItems className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-200 rounded-md shadow-lg py-1">
                     <MenuItem>
                       {({ active }) => (
-                        <Link href="" legacyBehavior>
-                          <a className={classNames(active ? 'bg-gray-100 dark:bg-gray-300' : '', 'block px-4 py-2 text-sm text-gray-700 dark:text-gray-800')}>
-                            Your Profile
-                          </a>
+                        <Link
+                          href="/profile" // เปลี่ยนจาก "" เป็น URL จริง
+                          className={classNames(
+                            active ? "bg-gray-100 dark:bg-gray-300" : "",
+                            "block px-4 py-2 text-sm text-gray-700 dark:text-gray-800"
+                          )}
+                        >
+                          Your Profile
                         </Link>
                       )}
                     </MenuItem>
                     <MenuItem>
                       {({ active }) => (
-                        <Link href="" legacyBehavior>
-                          <a className={classNames(active ? 'bg-gray-100 dark:bg-gray-300' : '', 'block px-4 py-2 text-sm text-gray-700 dark:text-gray-800')}>
-                            Settings
-                          </a>
+                        <Link
+                          href="/settings" // เปลี่ยนจาก "" เป็น URL จริง
+                          className={classNames(
+                            active ? "bg-gray-100 dark:bg-gray-300" : "",
+                            "block px-4 py-2 text-sm text-gray-700 dark:text-gray-800"
+                          )}
+                        >
+                          Settings
                         </Link>
                       )}
                     </MenuItem>
@@ -165,7 +170,10 @@ export default function Navbar() {
                       {({ active }) => (
                         <button
                           onClick={handleLogout}
-                          className={classNames(active ? 'bg-gray-100 dark:bg-gray-300' : '', 'block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-800')}
+                          className={classNames(
+                            active ? "bg-gray-100 dark:bg-gray-300" : "",
+                            "block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-800"
+                          )}
                         >
                           Logout
                         </button>
@@ -175,10 +183,11 @@ export default function Navbar() {
                 </Menu>
               </>
             ) : (
-              <Link href="/login" legacyBehavior>
-                <a className="bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600">
-                  Sign In
-                </a>
+              <Link
+                href="/login"
+                className="bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600"
+              >
+                Sign In
               </Link>
             )}
           </div>
@@ -204,22 +213,24 @@ export default function Navbar() {
       {menuOpen && (
         <div className="sm:hidden px-2 pt-2 pb-3">
           {filteredNavigation.map((item) => (
-            <Link key={item.name} href={item.href} legacyBehavior>
-              <a
-                className={classNames(
-                  item.current ? 'bg-gray-900 text-white dark:bg-gray-300 dark:text-black' : 'text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black',
-                  'block rounded-md px-3 py-2 text-base font-medium'
-                )}
-              >
-                {item.name}
-              </a>
+            <Link
+              key={item.name}
+              href={item.href}
+              className={classNames(
+                item.current
+                  ? "bg-gray-900 text-white dark:bg-gray-300 dark:text-black"
+                  : "text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black",
+                "block rounded-md px-3 py-2 text-base font-medium"
+              )}
+            >
+              {item.name}
             </Link>
           ))}
           <button
             onClick={toggleTheme}
             className="block w-full text-left px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black"
           >
-            {theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            {theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
           </button>
           {isAuthenticated ? (
             <button
@@ -229,10 +240,11 @@ export default function Navbar() {
               Logout
             </button>
           ) : (
-            <Link href="/login" legacyBehavior>
-              <a className="block w-full text-left px-3 py-2 text-base text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black">
-                Sign In
-              </a>
+            <Link
+              href="/login"
+              className="block w-full text-left px-3 py-2 text-base text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black"
+            >
+              Sign In
             </Link>
           )}
         </div>
