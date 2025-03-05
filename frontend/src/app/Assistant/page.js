@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import { useTheme } from "next-themes";
 
-const head = "http://localhost:3000"; // URL ของ backend
+const head = "https://nongao.lol-th-no1.com/api"; // URL ของ backend
 
 export default function Chat() {
   const [socket, setSocket] = useState(null);

@@ -1,0 +1,65 @@
+.star {
+    position: absolute;
+    width: 3px; /* ขนาดดาว */
+    height: 3px;
+    border-radius: 50%; /* ทำให้เป็นวงกลม */
+    animation: twinkle 5s linear infinite; /* Animation หลัก */
+  }
+  
+  /* Dark Mode: ดาวสีขาว */
+  .star {
+    background: rgba(255, 255, 255, 0);
+  }
+  
+  /* Light Mode: ดาวสีดำ */
+  :where(.dark) .star {
+    background: rgba(0, 0, 0, 0); /* สีดำใน Light Mode */
+  }
+  
+  /* Animation สำหรับการกระพริบใน Dark Mode */
+  @keyframes twinkle {
+    0% {
+      transform: scale(1, 1);
+      background: rgba(255, 255, 255, 0); /* เริ่มโปร่งใส */
+      animation-timing-function: linear;
+    }
+    40% {
+      transform: scale(0.8, 0.8);
+      background: rgba(255, 255, 255, 1); /* สีขาวเต็มที่ */
+      animation-timing-function: ease-out;
+    }
+    80% {
+      background: rgba(255, 255, 255, 0); /* กลับไปโปร่งใส */
+      transform: scale(1, 1);
+    }
+    100% {
+      background: rgba(255, 255, 255, 0);
+      transform: scale(1, 1);
+    }
+  }
+  
+  /* Animation สำหรับการกระพริบใน Light Mode */
+  :where(.dark) .star {
+    animation: twinkleLight 5s linear infinite;
+  }
+  
+  @keyframes twinkleLight {
+    0% {
+      transform: scale(1, 1);
+      background: rgba(0, 0, 0, 0); /* เริ่มโปร่งใส (สีดำ) */
+      animation-timing-function: linear;
+    }
+    40% {
+      transform: scale(0.8, 0.8);
+      background: rgba(0, 0, 0, 0.9); /* สีดำเข้มเพื่อให้มองเห็น */
+      animation-timing-function: ease-out;
+    }
+    80% {
+      background: rgba(0, 0, 0, 0); /* กลับไปโปร่งใส */
+      transform: scale(1, 1);
+    }
+    100% {
+      background: rgba(0, 0, 0, 0);
+      transform: scale(1, 1);
+    }
+  }
