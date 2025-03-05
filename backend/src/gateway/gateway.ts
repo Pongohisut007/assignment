@@ -52,7 +52,7 @@ export class Gateway implements OnModuleInit {
       prompt,
       aiResponse,
     );
-
+ 
     const logData = {
       prompt,
       response: aiResponse,

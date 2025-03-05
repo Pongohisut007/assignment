@@ -10,10 +10,12 @@ import { ChatHistory } from '../chatHistory/chat-history.entity';
 import { Post } from '../post/entities/post.entity';
 import { Comment } from '../comment/entities/comment.entity';
 import { SubComment } from '../sub-comment/entities/sub-comment.entity';
+import { Chat } from '../chat/chat.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
   USER = 'user',
+  GPT = 'gpt',
 }
 
 @Entity()
@@ -47,6 +49,9 @@ export class Users {
 
   @OneToMany(() => SubComment, (subcomment) => subcomment.owner)
   sub_comments: SubComment[];
+
+  @OneToMany(() => Chat, (chat) => chat.owner)
+  chats: Chat[];
 
   @OneToMany(() => Post, (post) => post.owner)
   posts: Post[];

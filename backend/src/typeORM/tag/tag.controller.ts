@@ -10,7 +10,7 @@ import {
 import { TagService } from './tag.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 
-@Controller('tag')
+@Controller('api/tag')
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
@@ -18,9 +18,9 @@ export class TagController {
   create(@Body() createTagDto: CreateTagDto) {
     return this.tagService.create(createTagDto);
   }
-
+  
   @Get()
-  findAll() {
+  async findAll() {
     return this.tagService.findAll();
   }
 
