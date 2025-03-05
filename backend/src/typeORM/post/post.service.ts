@@ -18,7 +18,7 @@ export class PostService {
 
   async create(user: any, postData: any) {
     // 1. สร้างโพสต์ใหม่ในฐานข้อมูล
-    const newPost = this.postRepository.create({
+    const newPost:any = this.postRepository.create({
       subject: postData.subject,
       content: postData.content,
       owner: { user_id: postData.owner },
@@ -37,7 +37,7 @@ export class PostService {
 
     //3. บันทึกคอมเมนต์ AI ลงในฐานข้อมูล
     const aiComment = await this.commentRepository.create({
-      post: { post_id: 1 },
+      post: { post_id: newPost.post_id },
       owner: { user_id: 3 },
       comment: aiResponse,
     });

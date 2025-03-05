@@ -14,6 +14,7 @@ import { SubComment } from '../sub-comment/entities/sub-comment.entity';
 export enum UserRole {
   ADMIN = 'admin',
   USER = 'user',
+  GPT = 'gpt'
 }
 
 @Entity()
