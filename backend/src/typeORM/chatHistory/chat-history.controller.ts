@@ -20,7 +20,10 @@ export class ChatHistoryController {
     }
 
     try {
-      const response = await this.chatHistoryService.processPrompt(+userId, prompt);
+      const response = await this.chatHistoryService.processPrompt(
+        +userId,
+        prompt,
+      );
       console.log('GPT-4o-mini response:', response);
 
       const room = `user_${userId}`;
@@ -35,7 +38,9 @@ export class ChatHistoryController {
 
       return { prompt, response }; // ส่งคืน JSON
     } catch (error) {
-      throw new BadRequestException('Failed to process prompt: ' + error.message);
+      throw new BadRequestException(
+        'Failed to process prompt: ' + error.message,
+      );
     }
   }
 }

@@ -1,0 +1,29 @@
+****************************************************
+FORUM-POST
+ 
+post: forum + สร้าง ai comment </api/post>
+{
+    "owner": <ownerId>,
+    "subject": <subjectMessage>,
+    "content": "<contentMessage>>",
+    "tagIds": [
+        1,2,3,... <array of tag ids (int)>
+    ]
+}
+
+get:  getAllPostCommentSubcomment (get ได้เลย) </api/post>
+
+post: createComment </api/comment>
+{
+    "owner": <ownerId>,
+    "post": <postId>,
+    "comment": <commentMessage>"
+}
+
+post: createSubcomment </api/sub-comment>
+{
+
+}
+ 
+
+*******************************************

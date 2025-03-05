@@ -11,12 +11,12 @@ import { CommentService } from './comment.service';
 // import { CreateCommentDto } from './dto/create-comment.dto';
 // import { UpdateCommentDto } from './dto/update-comment.dto';
 
-@Controller('comment')
+@Controller('api/comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Post()
-  create(@Body() createCommentDto: any) {
+  async create(@Body() createCommentDto: any) {
     return this.commentService.create(createCommentDto);
   }
 

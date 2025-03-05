@@ -19,10 +19,10 @@ export class PostController {
     return this.postService.create(user, createPostDto);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.postService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.postService.getAllPost();
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {

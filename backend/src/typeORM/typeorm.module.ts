@@ -17,6 +17,12 @@ import { Comment } from './comment/entities/comment.entity';
 import { Tag } from './tag/entities/tag.entity';
 import { PostController } from './post/post.controller';
 import { PostService } from './post/post.service';
+import { SubCommentModule } from './sub-comment/sub-comment.module';
+import { SubComment } from './sub-comment/entities/sub-comment.entity';
+import { CommentController } from './comment/comment.controller';
+import { CommentService } from './comment/comment.service';
+import { SubCommentService } from './sub-comment/sub-comment.service';
+import { SubCommentController } from './sub-comment/sub-comment.controller';
 
 @Module({
   imports: [
@@ -27,19 +33,49 @@ import { PostService } from './post/post.service';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Users, ChatHistory, Post, Comment, Tag],
+      entities: [Users, ChatHistory, Post, Comment, Tag, SubComment],
       synchronize: true,
       logging: true,
     }),
-    TypeOrmModule.forFeature([Users, ChatHistory, Post, Comment, Tag]),
+    TypeOrmModule.forFeature([
+      Users,
+      ChatHistory,
+      Post,
+      Comment,
+      Tag,
+      SubComment,
+    ]),
     JwtModule.register({
       secret: 'your-secret-key',
       signOptions: { expiresIn: '60m' },
     }),
-    forwardRef(() => GatewayModule), // ใช้ forwardRef
+    forwardRef(() => GatewayModule),
+    //SubCommentModule, // ใช้ forwardRef
   ],
-  controllers: [UsersController, AuthController, ChatHistoryController,PostController],
-  providers: [UsersService, AuthService, JwtStrategy, ChatHistoryService,PostService],
-  exports: [TypeOrmModule, UsersService, ChatHistoryService,PostService],
+  controllers: [
+    UsersController,
+    AuthController,
+    ChatHistoryController,
+    PostController,
+    CommentController,
+    SubCommentController,
+  ],
+  providers: [
+    UsersService,
+    AuthService,
+    JwtStrategy,
+    ChatHistoryService,
+    PostService,
+    CommentService,
+    SubCommentService,
+  ],
+  exports: [
+    TypeOrmModule,
+    UsersService,
+    ChatHistoryService,
+    PostService,
+    CommentService,
+    SubCommentService,
+  ],
 })
 export class TypeormModule {}
