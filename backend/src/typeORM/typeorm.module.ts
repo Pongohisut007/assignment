@@ -2,9 +2,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
-import { Info } from './info/info.entity';
-import { InfoController } from './info/info.controller';
-import { InfoService } from './info/info.service';
 import { Users } from './users/users.entity';
 import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
@@ -15,8 +12,12 @@ import { ChatHistory } from './chatHistory/chat-history.entity';
 import { ChatHistoryController } from './chatHistory/chat-history.controller';
 import { ChatHistoryService } from './chatHistory/chat-history.service';
 import 'dotenv/config';
-import { ESP32Service } from './esp32/esp32.service';
-import { ESP32Controller } from './esp32/esp32.controller';
+import { Post } from './post/entities/post.entity';
+import { Comment } from './comment/entities/comment.entity';
+import { Tag } from './tag/entities/tag.entity';
+import { CommentController } from './comment/comment.controller';
+import { PostController } from './post/post.controller';
+import { CommentService } from './comment/comment.service';
 
 @Module({
   imports: [
@@ -27,31 +28,17 @@ import { ESP32Controller } from './esp32/esp32.controller';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Info, Users, ChatHistory],
+      entities: [Users, ChatHistory, Post, Comment, Tag],
       synchronize: true,
       logging: true,
     }),
-    TypeOrmModule.forFeature([Info, Users, ChatHistory]),
+    TypeOrmModule.forFeature([Users, ChatHistory, Post, Comment, Tag]),
     JwtModule.register({
       secret: 'your-secret-key',
       signOptions: { expiresIn: '60m' },
     }),
   ],
-  controllers: [
-    InfoController,
-    UsersController,
-    AuthController,
-    ChatHistoryController,
-    ESP32Controller,
-  ],
-  providers: [
-    InfoService,
-    UsersService,
-    AuthService,
-    JwtStrategy,
-    ChatHistoryService,
-    ESP32Service,
-  ],
-  exports: [TypeOrmModule, UsersService, ChatHistoryService, ESP32Service],
+  providers: [],
+  exports: [],
 })
 export class TypeormModule {}
