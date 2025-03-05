@@ -4,8 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
 import { useTheme } from "next-themes";
 
-const head = "http://localhost:3000"; // URL ของ backend
-const socket = io("http://localhost:9002", { transports: ["websocket"] }); // URL ของ WebSocket
+const head = "https://nongao.lol-th-no1.com/api"; // URL ของ backend
 
 export default function Chat() {
   const [selectedRoom, setSelectedRoom] = useState(null); // ห้องที่เลือก

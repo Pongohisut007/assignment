@@ -3,7 +3,7 @@ import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
 import { ChatHistoryService } from './chat-history.service';
 import { Gateway } from '../../gateway/gateway';
 
-@Controller('openai')
+@Controller('api/openai')
 export class ChatHistoryController {
   constructor(
     private readonly chatHistoryService: ChatHistoryService,

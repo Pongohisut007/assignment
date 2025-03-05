@@ -23,6 +23,12 @@ import { CommentController } from './comment/comment.controller';
 import { CommentService } from './comment/comment.service';
 import { SubCommentService } from './sub-comment/sub-comment.service';
 import { SubCommentController } from './sub-comment/sub-comment.controller';
+import { ChatModule } from './chat/chat.module';
+import { RoomModule } from './room/room.module';
+import { Chat } from './chat/chat.entity';
+import { Room } from './room/room.entity';
+import { TagController } from './tag/tag.controller';
+import { TagService } from './tag/tag.service';
 
 @Module({
   imports: [
@@ -33,7 +39,16 @@ import { SubCommentController } from './sub-comment/sub-comment.controller';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Users, ChatHistory, Post, Comment, Tag, SubComment],
+      entities: [
+        Users,
+        ChatHistory,
+        Post,
+        Comment,
+        Tag,
+        SubComment,
+        Chat,
+        Room,
+      ],
       synchronize: true,
       logging: true,
     }),
@@ -50,6 +65,8 @@ import { SubCommentController } from './sub-comment/sub-comment.controller';
       signOptions: { expiresIn: '60m' },
     }),
     forwardRef(() => GatewayModule),
+    //ChatModule,
+    //RoomModule,
     //SubCommentModule, // ใช้ forwardRef
   ],
   controllers: [
@@ -59,6 +76,7 @@ import { SubCommentController } from './sub-comment/sub-comment.controller';
     PostController,
     CommentController,
     SubCommentController,
+    TagController,
   ],
   providers: [
     UsersService,
@@ -68,6 +86,7 @@ import { SubCommentController } from './sub-comment/sub-comment.controller';
     PostService,
     CommentService,
     SubCommentService,
+    TagService,
   ],
   exports: [
     TypeOrmModule,
@@ -76,6 +95,7 @@ import { SubCommentController } from './sub-comment/sub-comment.controller';
     PostService,
     CommentService,
     SubCommentService,
+    TagService,
   ],
 })
 export class TypeormModule {}

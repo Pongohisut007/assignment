@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToOne,
-  Column,
+  Column, 
   JoinTable,
   ManyToMany,
 } from 'typeorm';
@@ -17,7 +17,7 @@ import {
 export class Post {
   @PrimaryGeneratedColumn()
   post_id: number;
-
+ 
   @ManyToMany(() => Tag)
   @JoinTable()
   tags: Tag[];
