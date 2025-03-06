@@ -5,13 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import io from "socket.io-client";
-import styles from "./HomePage.module.css"; // นำเข้า CSS module
+import styles from "./HomePage.module.css";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [realTimeData, setRealTimeData] = useState("");
   const router = useRouter();
-  const starsContainerRef = useRef(null); // Ref เพื่ออ้างอิง container ของดาว
+  const starsContainerRef = useRef(null);
 
   // WebSocket logic
   useEffect(() => {
@@ -19,45 +19,57 @@ export default function Home() {
     const isLoggedInCookie = cookieStore.includes("isLoggedIn=true");
     setIsLoggedIn(isLoggedInCookie);
 
-    const socket = io("http://localhost:9002", {
-      transports: ["websocket"],
+    const socket = io("https://nongao.lol-th-no1.com", {
+      path: "/socket.io/",
+      transports: ["websocket", "polling"], // ระบุชัดเจน
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+    
+    socket.on("connect", () => {
+      console.log("เชื่อมต่อสำเร็จ, Transport:", socket.io.engine.transport.name);
+      socket.emit("joinRoom", 1);
+      // socket.emit("newPrompt", { userId: 1, prompt: "สวัสดีจากสคริปต์!" });
+      socket.emit("newPrompt", { userId: 1, prompt: "ท่อง a-z" });
+    });
+    
+    socket.on("connect_error", (error) => {
+      console.error("ข้อผิดพลาดการเชื่อมต่อ:", error.message, error);
     });
 
-    socket.on("connect", () => {
-      console.log("Connected to WebSocket server:", socket.id);
+    socket.on("disconnect", () => {
+      console.log("ตัดการเชื่อมต่อจากเซิร์ฟเวอร์");
     });
 
     socket.on("onMessage", (data) => {
-      console.log("Received message:", data);
+      console.log("รับข้อความ:", data);
       setRealTimeData(JSON.stringify(data));
     });
 
     socket.on("realTimeData", (data) => {
-      console.log("Received real-time data:", data);
+      console.log("รับข้อมูลเรียลไทม์:", data);
       setRealTimeData(data);
     });
 
-    socket.emit("newMessage", "Hello from Next.js");
+    socket.emit("newMessage", "สวัสดีจาก Next.js");
 
     return () => {
       socket.disconnect();
-      console.log("Disconnected from WebSocket server");
+      console.log("ตัดการเชื่อมต่อจากเซิร์ฟเวอร์ WebSocket");
     };
   }, []);
 
-  // Logic สำหรับสร้างดาวแบบสุ่ม
+  // Logic สำหรับสร้างดาวแบบสุ่ม (ไม่มีการเปลี่ยนแปลง)
   useEffect(() => {
     const container = starsContainerRef.current;
     if (!container) return;
 
     const createStars = () => {
-      // ลบดาวเก่าก่อน
       container.innerHTML = "";
-
-      // สร้างดาว 100 ดวง
       for (let i = 0; i < 100; i++) {
         const star = document.createElement("div");
-        star.className = styles.star; // ใช้คลาสจาก CSS module
+        star.className = styles.star;
         star.style.top = `${Math.random() * window.innerHeight}px`;
         star.style.left = `${Math.random() * window.innerWidth}px`;
         star.style.animationDuration = `${Math.random() * 5 + 5}s`;
@@ -66,10 +78,8 @@ export default function Home() {
       }
     };
 
-    // สร้างดาวครั้งแรก
     createStars();
 
-    // ปรับตำแหน่งดาวเมื่อขนาดหน้าจอเปลี่ยน
     const handleResize = () => {
       createStars();
     };
@@ -82,7 +92,6 @@ export default function Home() {
 
   return (
     <div className="relative grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-gray-900 dark:bg-gray-100 overflow-hidden">
-      {/* Container สำหรับดาว */}
       <div ref={starsContainerRef} className="absolute inset-0 pointer-events-none"></div>
 
       <main className="relative flex flex-col sm:flex-row gap-8 row-start-2 items-center justify-between w-full max-w-5xl z-10">
@@ -94,7 +103,7 @@ export default function Home() {
             การผสานระหว่าง IoT และ Website โดยใช้ไมค์ในการเปลี่ยนภาษาและส่งออกข้อมูลแบบ Real-time บนหน้าจอแสดงผล
           </p>
           <p className="text-sm text-gray-400 dark:text-gray-600">
-            Real-time Data: {realTimeData || "Waiting for data..."}
+            ข้อมูลเรียลไทม์: {realTimeData || "รอข้อมูล..."}
           </p>
           <div className="flex gap-4 items-center justify-center sm:justify-start flex-col sm:flex-row">
             <Link href={isLoggedIn ? "/Translation" : "/login"} legacyBehavior>

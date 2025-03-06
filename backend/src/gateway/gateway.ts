@@ -9,7 +9,19 @@ import {
 import { Server } from 'socket.io';
 import { ChatService } from 'src/typeORM/chat/chat.service';
 
-@WebSocketGateway(9002, { cors: { origin: 'http://localhost:3000' } })
+@WebSocketGateway(9002, {
+  cors: {
+    origin: [
+      "http://localhost:3000",
+      "https://nongao.lol-th-no1.com",
+      "http://nongao.lol-th-no1.com",
+    ],
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+  path: "/socket.io/",
+  transports: ["websocket", "polling"], // รองรับทั้งสอง transport
+})
 export class Gateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
@@ -19,11 +31,31 @@ export class Gateway implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    this.server.on('connection', (socket: any) => {
-      console.log('New Client Connected: ', socket.id);
-      socket.on('disconnect', () => {
-        console.log('Client Disconnected: ', socket.id);
+    // ดีบัก WebSocket ระดับต่ำ
+    this.server.engine.on("connection", (rawSocket: any) => {
+      console.log("WebSocket ระดับต่ำเชื่อมต่อ:", rawSocket.transport);
+    });
+
+    // ดีบัก Socket.IO การเชื่อมต่อ
+    this.server.on("connection", (socket: Socket) => {
+      console.log("Socket.IO เชื่อมต่อสำเร็จ:", socket.id, "Transport:", socket.conn.transport.name);
+      socket.on("disconnect", () => {
+        console.log("ไคลเอนต์ตัดการเชื่อมต่อ:", socket.id);
       });
+    });
+
+    // ดีบัก handshake
+    this.server.engine.on("initial_headers", (headers, req) => {
+      console.log("คำขอเริ่มต้น:", req.url, "Headers:", headers);
+    });
+
+    this.server.engine.on("connection_error", (err) => {
+      console.error("ข้อผิดพลาดการเชื่อมต่อ:", err.code, err.message, err.context);
+    });
+
+    // ดีบัก handshake ล้มเหลว
+    this.server.on("connect_error", (err) => {
+      console.error("ข้อผิดพลาดการเชื่อมต่อเซิร์ฟเวอร์:", err);
     });
   }
 
