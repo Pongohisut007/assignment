@@ -85,26 +85,26 @@ export default function Navbar() {
 
   return (
     <nav className="bg-gray-800 dark:bg-gray-200 relative z-30">
-      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           {/* ฝั่งซ้าย: โลโก้ */}
-          <div className="flex shrink-0 items-center">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             <Link href="/">
               <img
                 alt="Your Company"
                 src="./logoForum.png"
-                className="h-16 w-auto cursor-pointer"
+                className="h-12 w-auto sm:h-16 cursor-pointer"
               />
             </Link>
-            <div className="text-xl ml-4 text-blue-500 font-bold text-fuchsia-600 dark:text-cyan-500">
+            <div className="text-lg sm:text-xl font-bold text-fuchsia-600 dark:text-cyan-500 whitespace-nowrap">
               N e w G e n - F o r u m
             </div>
           </div>
 
           {/* ฝั่งขวา: Navigation และ Sign In/User Menu */}
-          <div className="flex items-center space-x-4">
+          <div className="hidden sm:flex items-center space-x-4">
             {/* Navigation */}
-            <div className="flex space-x-4">
+            <div className="flex space-x-2 lg:space-x-4">
               {filteredNavigation.map((item) => (
                 <Link
                   key={item.name}
@@ -113,7 +113,7 @@ export default function Navbar() {
                     item.current
                       ? "text-white hover:bg-gray-700 dark:bg-gray-300 dark:text-black"
                       : "text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black",
-                    "rounded-md px-3 py-2 text-sm font-medium"
+                    "rounded-md px-2 py-1 sm:px-3 sm:py-2 text-sm font-medium"
                   )}
                 >
                   {item.name}
@@ -124,68 +124,66 @@ export default function Navbar() {
             {/* Theme Switch Button */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full bg-gray-700 text-white dark:bg-gray-300 dark:text-black hover:bg-gray-500"
+              className="p-1 sm:p-2 rounded-full bg-gray-700 text-white dark:bg-gray-300 dark:text-black hover:bg-gray-500"
             >
               {theme === "dark" ? "☀️" : "🌙"}
             </button>
 
             {/* Sign In หรือ User Menu */}
             {isAuthenticated ? (
-              <>
-                <Menu as="div" className="relative">
-                  <MenuButton className="relative flex items-center justify-center rounded-full bg-gray-800 border-2 border-white text-sm text-white dark:bg-gray-300 dark:border-gray-400 hover:bg-gray-700 dark:text-black focus:ring-2 focus:ring-white w-8 h-8">
-                    <span className="sr-only">Open user menu</span>
-                    <span className="text-lg font-medium">
-                      {usernameInitial || "U"}
-                    </span>
-                  </MenuButton>
-                  <MenuItems className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-200 rounded-md shadow-lg py-1 z-20">
-                    <MenuItem>
-                      {({ active }) => (
-                        <Link
-                          href="/profile"
-                          className={classNames(
-                            active ? "bg-gray-100 dark:bg-gray-300" : "",
-                            "block px-4 py-2 text-sm text-gray-700 dark:text-gray-800"
-                          )}
-                        >
-                          Your Profile
-                        </Link>
-                      )}
-                    </MenuItem>
-                    <MenuItem>
-                      {({ active }) => (
-                        <Link
-                          href="/settings"
-                          className={classNames(
-                            active ? "bg-gray-100 dark:bg-gray-300" : "",
-                            "block px-4 py-2 text-sm text-gray-700 dark:text-gray-800"
-                          )}
-                        >
-                          Settings
-                        </Link>
-                      )}
-                    </MenuItem>
-                    <MenuItem>
-                      {({ active }) => (
-                        <button
-                          onClick={handleLogout}
-                          className={classNames(
-                            active ? "bg-gray-100 dark:bg-gray-300" : "",
-                            "block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-800"
-                          )}
-                        >
-                          Logout
-                        </button>
-                      )}
-                    </MenuItem>
-                  </MenuItems>
-                </Menu>
-              </>
+              <Menu as="div" className="relative">
+                <MenuButton className="flex items-center justify-center rounded-full bg-gray-800 border-2 border-white text-white dark:bg-gray-300 dark:border-gray-400 hover:bg-gray-700 dark:text-black focus:ring-2 focus:ring-white w-8 h-8 sm:w-10 sm:h-10">
+                  <span className="sr-only">Open user menu</span>
+                  <span className="text-base sm:text-lg font-medium">
+                    {usernameInitial || "U"}
+                  </span>
+                </MenuButton>
+                <MenuItems className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-200 rounded-md shadow-lg py-1 z-20">
+                  <MenuItem>
+                    {({ active }) => (
+                      <Link
+                        href="/profile"
+                        className={classNames(
+                          active ? "bg-gray-100 dark:bg-gray-300" : "",
+                          "block px-4 py-2 text-sm text-gray-700 dark:text-gray-800"
+                        )}
+                      >
+                        Your Profile
+                      </Link>
+                    )}
+                  </MenuItem>
+                  <MenuItem>
+                    {({ active }) => (
+                      <Link
+                        href="/settings"
+                        className={classNames(
+                          active ? "bg-gray-100 dark:bg-gray-300" : "",
+                          "block px-4 py-2 text-sm text-gray-700 dark:text-gray-800"
+                        )}
+                      >
+                        Settings
+                      </Link>
+                    )}
+                  </MenuItem>
+                  <MenuItem>
+                    {({ active }) => (
+                      <button
+                        onClick={handleLogout}
+                        className={classNames(
+                          active ? "bg-gray-100 dark:bg-gray-300" : "",
+                          "block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-800"
+                        )}
+                      >
+                        Logout
+                      </button>
+                    )}
+                  </MenuItem>
+                </MenuItems>
+              </Menu>
             ) : (
               <Link
                 href="/login"
-                className="bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600"
+                className="bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white px-3 py-1 sm:px-4 sm:py-2 rounded-md text-sm font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600"
               >
                 Sign In
               </Link>
@@ -193,16 +191,16 @@ export default function Navbar() {
           </div>
 
           {/* ปุ่มเมนูสำหรับ mobile */}
-          <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
+          <div className="sm:hidden flex items-center">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="relative p-2 text-gray-400 hover:bg-gray-700 hover:text-white dark:text-gray-600 dark:hover:bg-gray-400 dark:hover:text-black focus:ring-2 focus:ring-white focus:outline-none"
+              className="p-2 text-gray-400 hover:bg-gray-700 hover:text-white dark:text-gray-600 dark:hover:bg-gray-400 dark:hover:text-black focus:ring-2 focus:ring-white focus:outline-none"
             >
               <span className="sr-only">Open main menu</span>
               {menuOpen ? (
-                <XMarkIcon className="block size-6" aria-hidden="true" />
+                <XMarkIcon className="size-6" aria-hidden="true" />
               ) : (
-                <Bars3Icon className="block size-6" aria-hidden="true" />
+                <Bars3Icon className="size-6" aria-hidden="true" />
               )}
             </button>
           </div>
@@ -211,7 +209,7 @@ export default function Navbar() {
 
       {/* เมนู mobile */}
       {menuOpen && (
-        <div className="sm:hidden px-2 pt-2 pb-3">
+        <div className="sm:hidden px-2 pt-2 pb-3 bg-gray-800 dark:bg-gray-200">
           {filteredNavigation.map((item) => (
             <Link
               key={item.name}
@@ -222,6 +220,7 @@ export default function Navbar() {
                   : "text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black",
                 "block rounded-md px-3 py-2 text-base font-medium"
               )}
+              onClick={() => setMenuOpen(false)} // ปิดเมนูเมื่อคลิกลิงก์
             >
               {item.name}
             </Link>
@@ -243,6 +242,7 @@ export default function Navbar() {
             <Link
               href="/login"
               className="block w-full text-left px-3 py-2 text-base text-gray-300 hover:bg-gray-700 hover:text-white dark:text-gray-700 dark:hover:bg-gray-400 dark:hover:text-black"
+              onClick={() => setMenuOpen(false)} // ปิดเมนูเมื่อคลิกลิงก์
             >
               Sign In
             </Link>

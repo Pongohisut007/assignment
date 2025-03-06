@@ -120,7 +120,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmailOrUsername(e.target.value)}
                 required
                 disabled={isLoading}
-                className="w-full border p-2 rounded text-gray-800 mt-1"
+                className="w-full border p-2 dark:bg-gray-50 rounded text-gray-800 mt-1"
               />
             </div>
 
@@ -136,7 +136,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
-                className="w-full border p-2 rounded text-gray-800 mt-1"
+                className="w-full dark:bg-gray-50 border p-2 rounded text-gray-800 mt-1"
               />
             </div>
 
