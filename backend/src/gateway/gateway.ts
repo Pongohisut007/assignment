@@ -44,6 +44,12 @@ export class Gateway implements OnModuleInit {
         data.message.includes('@ronaldo') ||
         data.message.includes('@เซียนบอล')
       ) {
+        newMessage = await this.chatService.create({
+          owner: data.owner,
+          room_id: 1,
+          message: data.message, 
+        });
+        this.server.emit('newMessageResponse', {...newMessage});
         if (data.message.includes('@ronaldo')) {
           prePrompt =
             'PREPROMPT:ให้ตอบฉันด้วยสไตล์ cristiano ronaldo ให้แบบกวนๆ อาจจะมีคำกวนๆของ ronaldo เช่น suiiii หรืออะไรก็ได้ที่ปั่นๆ สุ่มๆกันไป';
@@ -66,11 +72,6 @@ export class Gateway implements OnModuleInit {
           aiResponse = await this.chatService.getChatGPTresponse(
             `PREPROMPT:${prePrompt}MESSAGE:${data.message}`,
           );
-          await this.chatService.create({
-            owner:data.owner,
-            room_id: 1,
-            message:data.message
-          })
           newMessage = await this.chatService.create({
             owner: 5,
             room_id: 1,
@@ -93,6 +94,12 @@ export class Gateway implements OnModuleInit {
         data.message.includes('@เซียนโค้ด') ||
         data.message.includes('@จารย์ปัญ')
       ) {
+        newMessage = await this.chatService.create({
+          owner: data.owner,
+          room_id: 2,
+          message: data.message, 
+        });
+        this.server.emit('newMessageResponse', {...newMessage});
         if (data.message.includes('@เซียนโค้ด')) {
 
           prePrompt =
