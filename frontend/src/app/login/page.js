@@ -28,7 +28,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3001/api/auth/login', {
+      const response = await fetch(`${realA}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ emailOrUsername, password }),
@@ -58,7 +58,7 @@ export default function LoginPage() {
 
       const token = data;
 
-      const userResponse = await fetch('http://localhost:3001/api/users/me', {
+      const userResponse = await fetch(`${realA}/api/users/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
