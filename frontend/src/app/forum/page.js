@@ -18,7 +18,7 @@ export default function Forum() {
   const { theme } = useTheme();
   const threadsEndRef = useRef(null);
 
-  const API_BASE_URL = "http://localhost:3001";
+  const API_BASE_URL = "https://nongao.lol-th-no1.com";
 
   function getCookie(name) {
     const value = `; ${document.cookie}`;

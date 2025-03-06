@@ -6,7 +6,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server ,Socket} from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { ChatService } from 'src/typeORM/chat/chat.service';
 
 @WebSocketGateway(9002, {

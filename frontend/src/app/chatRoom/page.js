@@ -6,8 +6,15 @@ import { useTheme } from "next-themes";
 import { useAuth } from "../RootLayout.client";
 
 const WS_URL = "http://localhost:9002"; // WebSocket URL
-const API_URL = "http://localhost:3001/api/chat"; // REST API URL
-const socket = io(WS_URL, { transports: ["websocket"] }); // เชื่อมต่อ WebSocket
+const API_URL = "https://nongao.lol-th-no1.com/api/chat"; // REST API URL
+// const socket = io(WS_URL, { transports: ["websocket"] }); // เชื่อมต่อ WebSocket
+const socket = io("https://nongao.lol-th-no1.com", {
+  path: "/socket.io/",
+  transports: ["websocket", "polling"], // ระบุชัดเจน
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000,
+});
 
 export default function Chat() {
   const { user } = useAuth();
