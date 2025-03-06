@@ -21,19 +21,18 @@ export default function Home() {
 
     const socket = io("https://nongao.lol-th-no1.com", {
       path: "/socket.io/",
-      transports: ["websocket", "polling"], // ระบุชัดเจน
+      transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     });
-    
+
     socket.on("connect", () => {
       console.log("เชื่อมต่อสำเร็จ, Transport:", socket.io.engine.transport.name);
       socket.emit("joinRoom", 1);
-      // socket.emit("newPrompt", { userId: 1, prompt: "สวัสดีจากสคริปต์!" });
       socket.emit("newPrompt", { userId: 1, prompt: "ท่อง a-z" });
     });
-    
+
     socket.on("connect_error", (error) => {
       console.error("ข้อผิดพลาดการเชื่อมต่อ:", error.message, error);
     });
@@ -60,7 +59,7 @@ export default function Home() {
     };
   }, []);
 
-  // Logic สำหรับสร้างดาวแบบสุ่ม (ไม่มีการเปลี่ยนแปลง)
+  // Logic สำหรับสร้างดาวแบบสุ่ม
   useEffect(() => {
     const container = starsContainerRef.current;
     if (!container) return;
@@ -92,20 +91,22 @@ export default function Home() {
 
   return (
     <div className="relative grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-gray-900 dark:bg-gray-100 overflow-hidden">
-      <div ref={starsContainerRef} className="absolute inset-0 pointer-events-none"></div>
+      <div ref={starsContainerRef} className="absolute inset-0 pointer-events-none z-0"></div>
 
       <main className="relative flex flex-col sm:flex-row gap-8 row-start-2 items-center justify-between w-full max-w-5xl z-10">
         <div className="flex flex-col gap-4 text-center sm:text-left">
           <h1 className="text-4xl sm:text-5xl font-bold text-white dark:text-black">
-            Small AI
+            NewGen-Forum
           </h1>
           <p className="text-sm sm:text-base text-gray-300 dark:text-gray-700 max-w-md">
-            การผสานระหว่าง IoT และ Website โดยใช้ไมค์ในการเปลี่ยนภาษาและส่งออกข้อมูลแบบ Real-time บนหน้าจอแสดงผล
+            NewGen-Forum: แพลตฟอร์มกระทู้ AI อัจฉริยะ เชื่อมต่อด้วย OpenAI API
+            ในยุคที่ AI กำลังเข้ามามีบทบาทมากขึ้นในการสื่อสารและให้ข้อมูล NewGen-Forum
+            ได้ก้าวขึ้นมาเป็นแพลตฟอร์มกระทู้แนวใหม่ที่ช่วยให้ผู้ใช้งานสามารถตั้งกระทู้
+            ถาม-ตอบ และแลกเปลี่ยนความคิดเห็นได้อย่างสะดวกสบาย โดยมี AI จาก OpenAI
+            คอยช่วยให้คำตอบและสร้างบทสนทนาที่ลื่นไหล
           </p>
-          <p className="text-sm text-gray-400 dark:text-gray-600">
-            ข้อมูลเรียลไทม์: {realTimeData || "รอข้อมูล..."}
-          </p>
-          <div className="flex gap-4 items-center justify-center sm:justify-start flex-col sm:flex-row">
+
+          <div className="mt-5 flex gap-4 items-center justify-center sm:justify-start flex-col sm:flex-row">
             <Link href={isLoggedIn ? "/Translation" : "/login"} legacyBehavior>
               <a className="bg-gray-700 dark:bg-gray-200 rounded-full border border-solid border-gray-600 dark:border-gray-300 transition-colors flex items-center justify-center text-white dark:text-black gap-2 hover:bg-gray-600 dark:hover:bg-gray-300 text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5">
                 <Image
@@ -121,7 +122,7 @@ export default function Home() {
         </div>
         <div className="flex-shrink-0 sm:ml-auto">
           <Image
-            src="/TranslationPig.jpg"
+            src="/comAi.svg"
             alt="Illustration of a pig for translation feature"
             width={600}
             height={900}

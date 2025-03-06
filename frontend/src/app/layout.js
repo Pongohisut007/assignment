@@ -3,7 +3,7 @@ import RootLayoutClient from './RootLayout.client';
 import { ThemeProvider } from 'next-themes';
 
 export const metadata = {
-  title: 'My App',
+  title: 'NewGen-Forum',
   description: 'A Next.js application',
 };
 

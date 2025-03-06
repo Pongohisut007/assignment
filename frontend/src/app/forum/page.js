@@ -131,6 +131,7 @@ export default function Forum() {
   };
 
   const openThreadModal = (thread) => {
+    console.log(thread)
     setSelectedThread(thread);
     setComments(thread.comments || []);
     setReplyInputs({});
@@ -174,6 +175,7 @@ export default function Forum() {
             : thread
         )
       );
+      console.log(comments)
       setNewComment("");
     } catch (error) {
       console.error("Error creating comment:", error);
@@ -214,7 +216,7 @@ export default function Forum() {
       alert("เกิดข้อผิดพลาดในการสร้างการตอบกลับ");
     }
   };
-
+  console.log("test =",selectedThread)
   return (
     <div className="min-h-screen bg-gray-900 text-white dark:bg-gray-100 dark:text-black p-6">
       <div className="max-w-4xl mx-auto">
@@ -384,7 +386,7 @@ export default function Forum() {
                           {comment.owner?.username?.charAt(0).toUpperCase() || "U"}
                         </div>
                         <div className="flex-1">
-                          <p className="text-gray-100 dark:text-gray-900 font-semibold">{comment.owner?.username || "Unknown"}</p>
+                          <p className="text-gray-100 dark:text-gray-900 font-semibold">{comment?.owner?.username || "Unknown"}</p>
                           <p className="text-gray-200 dark:text-gray-800 mt-1">{comment.comment}</p>
                           <span className="text-xs text-gray-400 dark:text-gray-600 mt-1 block">
                             {new Date(comment.created_at || comment.timestamp).toLocaleString()}
@@ -424,7 +426,7 @@ export default function Forum() {
                         <form
                           onSubmit={(e) => handleReplySubmit(e, comment.comment_id)}
                           className="ml-12 mt-2 flex flex-col space-y-2"
-                        >
+                        >{console.log(comment.owner)}
                           <textarea
                             placeholder={`Reply to ${comment.owner?.username || "Unknown"}...`}
                             value={replyInputs[comment.comment_id]}

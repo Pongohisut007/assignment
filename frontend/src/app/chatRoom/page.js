@@ -238,27 +238,59 @@ export default function Chat() {
     <div className="flex min-h-screen bg-gray-900 text-white dark:bg-gray-100 dark:text-black">
       {/* Left Sidebar: Room Selection */}
       <div className="w-1/4 p-4 flex flex-col space-y-4 border-r border-gray-700 dark:border-gray-300">
-        <div
-          className="p-4 bg-gray-800 dark:bg-gray-200 rounded-lg cursor-pointer hover:bg-gray-700 dark:hover:bg-gray-300 transition"
-          onClick={() => joinRoom("sport")}
-        >
-          <h2 className="text-lg font-bold mb-2">ห้องกีฬา</h2>
-          <p className="text-sm text-gray-400 dark:text-gray-600">คุยเรื่องกีฬาทุกประเภท</p>
-        </div>
-        <div
-          className="p-4 bg-gray-800 dark:bg-gray-200 rounded-lg cursor-pointer hover:bg-gray-700 dark:hover:bg-gray-300 transition"
-          onClick={() => joinRoom("technology")}
-        >
-          <h2 className="text-lg font-bold">ห้องการศึกษาเทคโนโลยี</h2>
-          <p className="text-sm text-gray-400 dark:text-gray-600">พูดคุยเกี่ยวกับเทคโนโลยีและการศึกษา</p>
-        </div>
-      </div>
+  <div
+    className="p-4  bg-gray-800 dark:bg-gray-200 rounded-lg cursor-pointer hover:bg-gray-700 dark:hover:bg-gray-300 transition"
+    onClick={() => joinRoom("sport")}
+  >
+    <h2 className="text-lg font-bold mb-2">ห้องกีฬา</h2>
+    <p className="text-sm text-gray-400 dark:text-gray-600">คุยเรื่องกีฬาทุกประเภท</p>
+  </div>
+  <div
+    className="p-4 bg-gray-800 dark:bg-gray-200 rounded-lg cursor-pointer hover:bg-gray-700 dark:hover:bg-gray-300 transition"
+    onClick={() => joinRoom("technology")}
+  >
+    <h2 className="text-lg font-bold">ห้องการศึกษาเทคโนโลยี</h2>
+    <p className="text-sm text-gray-400 dark:text-gray-600">พูดคุยเกี่ยวกับเทคโนโลยีและการศึกษา</p>
+  </div>
+  <div
+    className="p-4 bg-gray-800 dark:bg-gray-200 rounded-lg opacity-50"
+  >
+    <h2 className="text-lg font-bold mb-2">ห้องท่องเที่ยวทั่วโลก</h2>
+    <p className="text-sm text-gray-400 dark:text-gray-600">แชร์ประสบการณ์และสถานที่ท่องเที่ยวทั่วโลก</p>
+  </div>
+  <div
+    className="p-4 bg-gray-800 dark:bg-gray-200 rounded-lg opacity-50"
+  >
+    <h2 className="text-lg font-bold mb-2">ห้องครัวอาหาร</h2>
+    <p className="text-sm text-gray-400 dark:text-gray-600">แลกเปลี่ยนสูตรอาหารและเคล็ดลับการทำครัว</p>
+  </div>
+  <div
+    className="p-4 bg-gray-800 dark:bg-gray-200 rounded-lg opacity-50"
+  >
+    <h2 className="text-lg font-bold mb-2">ห้องดนตรี</h2>
+    <p className="text-sm text-gray-400 dark:text-gray-600">พูดคุยเกี่ยวกับเพลงและวงดนตรีที่ชื่นชอบ</p>
+  </div>
+  <div
+    className="p-4 bg-gray-800 dark:bg-gray-200 rounded-lg opacity-50"
+  >
+    <h2 className="text-lg font-bold mb-2">ห้องเกมมิ่ง</h2>
+    <p className="text-sm text-gray-400 dark:text-gray-600">คุยเรื่องเกมและกลยุทธ์การเล่น</p>
+  </div>
+  <div
+    className="p-4 bg-gray-800 dark:bg-gray-200 rounded-lg opacity-50"
+  >
+    <h2 className="text-lg font-bold mb-2">ห้องภาพยนตร์</h2>
+    <p className="text-sm text-gray-400 dark:text-gray-600">รีวิวและพูดคุยเกี่ยวกับหนังที่ชอบ</p>
+  </div>
+</div>
+      
+      
 
       {/* Right Chat Area */}
       <div className="w-3/4 flex flex-col flex-grow p-4 sm:p-12 overflow-hidden">
         {/* Room Title */}
         <div className="mb-4 text-center border-b border-gray-700 dark:border-gray-300 pb-2">
-          <h1 className="text-2xl font-bold text-white dark:text-black mb-3">{getRoomTitle()}</h1>
+          <h1 className="text-cyan-400 text-2xl font-bold text-white dark:text-black mb-3">{getRoomTitle()}</h1>
         </div>
 
         {/* Chat Display Area */}

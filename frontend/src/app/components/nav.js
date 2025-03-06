@@ -48,7 +48,7 @@ export default function Navbar() {
       } else {
         setUsernameInitial("");
       }
-    }; 
+    };
 
     checkAuth();
     setHydrated(true);
@@ -84,7 +84,7 @@ export default function Navbar() {
     : navigation.filter((item) => item.name === "Home");
 
   return (
-    <nav className="bg-gray-800 dark:bg-gray-200">
+    <nav className="bg-gray-800 dark:bg-gray-200 relative z-30">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           {/* ฝั่งซ้าย: โลโก้ */}
@@ -92,12 +92,12 @@ export default function Navbar() {
             <Link href="/">
               <img
                 alt="Your Company"
-                src="./output.png"
+                src="./logoForum.png"
                 className="h-16 w-auto cursor-pointer"
               />
             </Link>
-            <div className="text-xl font-bold text-fuchsia-600 dark:text-fuchsia-700">
-              N e w G e n F o r u m
+            <div className="text-xl ml-4 text-blue-500 font-bold text-fuchsia-600 dark:text-cyan-500">
+              N e w G e n - F o r u m
             </div>
           </div>
 
@@ -139,11 +139,11 @@ export default function Navbar() {
                       {usernameInitial || "U"}
                     </span>
                   </MenuButton>
-                  <MenuItems className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-200 rounded-md shadow-lg py-1">
+                  <MenuItems className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-200 rounded-md shadow-lg py-1 z-20">
                     <MenuItem>
                       {({ active }) => (
                         <Link
-                          href="/profile" // เปลี่ยนจาก "" เป็น URL จริง
+                          href="/profile"
                           className={classNames(
                             active ? "bg-gray-100 dark:bg-gray-300" : "",
                             "block px-4 py-2 text-sm text-gray-700 dark:text-gray-800"
@@ -156,7 +156,7 @@ export default function Navbar() {
                     <MenuItem>
                       {({ active }) => (
                         <Link
-                          href="/settings" // เปลี่ยนจาก "" เป็น URL จริง
+                          href="/settings"
                           className={classNames(
                             active ? "bg-gray-100 dark:bg-gray-300" : "",
                             "block px-4 py-2 text-sm text-gray-700 dark:text-gray-800"
