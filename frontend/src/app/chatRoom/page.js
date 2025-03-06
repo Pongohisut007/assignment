@@ -106,25 +106,41 @@ export default function Chat() {
     socket.on("newMessageResponse", (data) => {
       console.log("Received new message:", data);
 
-      if ([4,5,6,7].includes(data?.owner?.user_id)) {
-        setChatHistory((prev) => {
-          const room = selectedRoom;
-          return {
-            ...prev,
-            [room]: [
-              ...prev[room],
-              {
-                sender: "user",
-                message: `${data.owner.username} : ${data?.aiResponse}`,
-                userId: data?.owner?.user_id,
-              },
-            ],
-          };
-        });
-      }
-      else {
+      setChatHistory((prev) => {
+        const room = selectedRoom;
+        return {
+          ...prev,
+          [room]: [
+            ...prev[room],
+            {
+              sender: "user",
+              message: `${data?.owner?.username} : ${[4,5,6,7].includes(data?.owner?.user_id) ? data?.aiResponse : data?.message}`,
+              userId: data?.owner?.user_id,
+            },
+          ],
+        };
+      });
 
-      }
+      // if ([4,5,6,7].includes(data?.owner?.user_id)) {
+      //   setChatHistory((prev) => {
+      //     const room = selectedRoom;
+      //     return {
+      //       ...prev,
+      //       [room]: [
+      //         ...prev[room],
+              
+      //         {
+      //           sender: "user",
+      //           message: `${data.owner.username} : ${data?.aiResponse}`,
+      //           userId: data?.owner?.user_id,
+      //         },
+      //       ],
+      //     };
+      //   });
+      // }
+      // else {
+      // }
+
       setIsSending(false);
     });
 
@@ -193,18 +209,18 @@ export default function Chat() {
       });
 
       // เพิ่มข้อความของผู้ใช้เข้าไปใน chatHistory ทันที
-      setChatHistory((prev) => ({
-        ...prev,
-        [selectedRoom]: [
-          ...prev[selectedRoom],
-          {
-            sender: "user",
-            message: `${username} : ${inputMessage}`,
-            profilePic: '',
-            userId: userId,
-          },
-        ],
-      }));
+      // setChatHistory((prev) => ({
+      //   ...prev,
+      //   [selectedRoom]: [
+      //     ...prev[selectedRoom],
+      //     {
+      //       sender: "user",
+      //       message: `${username} : ${inputMessage}`,
+      //       profilePic: '',
+      //       userId: userId,
+      //     },
+      //   ],
+      // }));
       
       setInputMessage("");
       setShowSuggestions(false);
